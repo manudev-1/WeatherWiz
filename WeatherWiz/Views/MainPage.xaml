@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:WeatherWiz.ViewModels"
+             x:Class="WeatherWiz.MainPage"
+             Shell.NavBarIsVisible="False">
+    <ContentPage.BindingContext>
+        <local:MainPageViewModel />
+    </ContentPage.BindingContext>
+    <Grid>
+        <Image x:Name="bgImage" Source="{Binding ImageSource}" Aspect="AspectFill"/>
+        <Grid>
+            
+            
+        </Grid>
+    </Grid>
+</ContentPage>
