@@ -15,6 +15,7 @@ namespace WeatherWiz.Models
         private const string FormatWithMilliseconds = "yyyy-MM-ddTHH:mm:ss.fff";
         private const string FormatWithMillisecondsAndZ = "yyyy-MM-ddTHH:mm:ss.fffZ";
         private const string FormatDayMonthYear = "dd/MM/yyyy HH:mm:ss";
+        private const string FormatYearMonthDay = "yyyy-MM-dd HH:mm:ss";
 
         public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
         {
@@ -23,6 +24,7 @@ namespace WeatherWiz.Models
             if (DateTime.TryParseExact(dateString, FormatWithMillisecondsAndZ, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out DateTime dateTimeWithZ)) return dateTimeWithZ;
             if (DateTime.TryParseExact(dateString, FormatWithMilliseconds, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateTime)) return dateTime;
             if (DateTime.TryParseExact(dateString, FormatDayMonthYear, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateTimeDayMonthYear)) return dateTimeDayMonthYear;
+            if (DateTime.TryParseExact(dateString, FormatYearMonthDay, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateTimeYearMonthDay)) return dateTimeYearMonthDay;
             
 
             throw new JsonSerializationException($"Impossibile convertire il valore '{dateString}' in DateTime.");

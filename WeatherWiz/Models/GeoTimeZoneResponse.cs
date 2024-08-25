@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace WeatherWiz.Models
 {
-    class GeoTimeZoneResponse
+    class GeoTimeZoneResponse : ObjectLog
     {
         public double Longitude { get; set; }
         public double Latitude { get; set; }

@@ -12,7 +12,6 @@ namespace WeatherWiz.ViewModels
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        // Metodo per sollevare l'evento PropertyChanged
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
