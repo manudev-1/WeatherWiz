@@ -11,6 +11,9 @@ namespace WeatherWiz.Models
         // Attribute
         private HttpClient _httpClient;
         private string? _url;
+        private string? _api_key;
+
+
 
         // Property
         public HttpClient HttpClient
@@ -23,12 +26,18 @@ namespace WeatherWiz.Models
             get { return _url; }
             set { _url = value; }
         }
+        public string? ApiKey
+        {
+            get { return _api_key; }
+            set { _api_key = value; }
+        }
 
         // Method
-        public Api(string URL = "")
+        public Api(string URL = "", string ApiKey = "")
         {
             HttpClient = new HttpClient();
             this.URL = URL;
+            this.ApiKey = ApiKey;
 
             HttpClient.BaseAddress = new Uri(URL);
         } // End Constructor
