@@ -17,6 +17,8 @@ namespace WeatherWiz.ViewModels
         private readonly WeatherService weatherService = new();
         private readonly WebView? _webView;
         private readonly System.Timers.Timer _timer;
+        private readonly ICommand _panUpdateCommand;
+
         private string? _location;
         private TimeOnly? _time; 
         private Tuple<double?, double?>? _coords;
@@ -26,6 +28,7 @@ namespace WeatherWiz.ViewModels
         private string? _descr;
         private int _highTemp;
         private int _lowTemp;
+        private int _translationY;
 
         // Property
         public string? Location
@@ -104,6 +107,11 @@ namespace WeatherWiz.ViewModels
             get { return _lowTemp; }
             set { SetProperty(ref _lowTemp, value); }
         }
+        public int TraslationY
+        {
+            get { return _translationY; }
+            set { SetProperty(ref _translationY, value); }
+        }
 
         // Method
         public MainPageViewModel()
@@ -118,6 +126,9 @@ namespace WeatherWiz.ViewModels
             _timer = new( 60 * 60 * 1000); 
             _timer.Elapsed += async (sender, e) => await UpdateTimeAsync();
             _timer.Start();
+
+            TraslationY = 650;
+            _panUpdateCommand = new Command<PanUpdatedEventArgs>(PanUpdate);
         }
         public async Task GetCurrentLocationAsync()
         {
@@ -163,5 +174,21 @@ namespace WeatherWiz.ViewModels
                 Debug.WriteLine("JavaScript function 'updateTime' is not defined.");
             }
         } // End UpdateTimeAsync
+        public void PanUpdate(PanUpdatedEventArgs e)
+        {
+            Debug.WriteLine(TraslationY);
+            switch (e.StatusType)
+            {
+                case GestureStatus.Started:
+                case GestureStatus.Running:
+                    TraslationY += (int)e.TotalY;
+                    break;
+                case GestureStatus.Canceled:
+                case GestureStatus.Completed:
+                    if (TraslationY <= 500) TraslationY = 0;
+                    else TraslationY = 650;
+                    break;
+            } // End Switch
+        } // End PanUpdate
     } // End LocationViewModel
 }

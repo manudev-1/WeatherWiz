@@ -54,6 +54,23 @@
                  Grid.Row="1"
                  BackgroundColor="transparent"/>
         </Grid>
- 
+        <Border TranslationY="{Binding TraslationY}" 
+                Stroke="White">
+
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="40" />
+            </Border.StrokeShape>
+            <Border.Background>
+                <LinearGradientBrush>
+                    <GradientStop Color="#2E335A"
+                          Offset="0.1" />
+                    <GradientStop Color="#1C1B33"
+                          Offset="1.0" />
+                </LinearGradientBrush>
+            </Border.Background>
+            <Border.GestureRecognizers>
+                <PanGestureRecognizer PanUpdated="PanGestureRecognizer_PanUpdated"/>
+            </Border.GestureRecognizers>
+        </Border>
     </Grid>
 </ContentPage>

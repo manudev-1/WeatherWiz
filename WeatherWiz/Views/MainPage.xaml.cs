@@ -5,7 +5,6 @@ namespace WeatherWiz
 {
     public partial class MainPage : ContentPage
     {
-        private MainPageViewModel? ViewModel => BindingContext as MainPageViewModel;
         public MainPage()
         {
             InitializeComponent();
@@ -13,6 +12,11 @@ namespace WeatherWiz
             {
                 Url = "index.html"
             };
-        }
-    }
-}
+        } // End Constructor
+        private void PanGestureRecognizer_PanUpdated(object sender, PanUpdatedEventArgs e)
+        {
+            var viewModel = (MainPageViewModel)BindingContext;
+            viewModel.PanUpdate(e);
+        } // End PanGestureRecognizer_PanUpdated
+    } // End class
+} // End namespace
