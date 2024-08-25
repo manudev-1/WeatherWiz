@@ -13,10 +13,7 @@ namespace WeatherWiz.Models
     class TimeZoneService : Api
     {
         // Method
-        public TimeZoneService() : base("https://api.geotimezone.com/public/")
-        {
-            HttpClient.BaseAddress = new Uri(URL ?? "");
-        }
+        public TimeZoneService() : base("https://api.geotimezone.com/public/") { }
         /// <summary>
         /// Convert JSON to GeoTimeZoneResponse
         /// </summary>

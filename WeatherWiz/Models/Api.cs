@@ -27,8 +27,10 @@ namespace WeatherWiz.Models
         // Method
         public Api(string URL = "")
         {
-            _httpClient = new HttpClient();
+            HttpClient = new HttpClient();
             this.URL = URL;
+
+            HttpClient.BaseAddress = new Uri(URL);
         } // End Constructor
 
     } // End Api
