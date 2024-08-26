@@ -1,5 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Maui.LifecycleEvents;
+using Newtonsoft.Json;
+using System.Diagnostics;
+using System.Reflection;
+using WeatherWiz.Models;
 
 namespace WeatherWiz
 {
@@ -36,8 +41,18 @@ namespace WeatherWiz
                     fonts.AddFont("Montserrat-Thin.ttf", "MontSerratThin");
                 });
 
+            var a = Assembly.GetExecutingAssembly();
+            using var stream = a.GetManifestResourceStream("WeatherWiz.appsettings.json");
+
+            var config = new ConfigurationBuilder()
+                        .AddJsonStream(stream)
+                        .Build();
+
+            foreach (var kv in config.AsEnumerable())
+                Environment.SetEnvironmentVariable(kv.Key, kv.Value);
+            
 #if DEBUG
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
 
             return builder.Build();
