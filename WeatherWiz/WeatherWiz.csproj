@@ -56,12 +56,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Resources\Fonts\MaterialIcons-Regular.ttf" />
 	  <None Remove="Resources\Fonts\Montserrat-Bold.ttf" />
 	  <None Remove="Resources\Fonts\Montserrat-Medium.ttf" />
 	  <None Remove="Resources\Fonts\Montserrat-Regular.ttf" />
 	  <None Remove="Resources\Fonts\Montserrat-SemiBold.ttf" />
 	  <None Remove="Resources\Fonts\Montserrat-Thin.ttf" />
-	  <None Remove="Resources\Images\air.png" />
+	  <None Remove="Resources\Images\air.svg" />
 	  <None Remove="Resources\Images\day.jpg" />
 	  <None Remove="Resources\Images\night.jpg" />
 	  <None Remove="Resources\Images\sunrise.jpg" />

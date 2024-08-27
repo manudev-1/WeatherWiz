@@ -20,8 +20,8 @@ public partial class Widget : ContentView
         typeof(Widget),
         default(string)
     );
-    public static readonly BindableProperty ContentProperty = BindableProperty.Create(
-        nameof(Content),
+    public static readonly BindableProperty XAMLChildrenProperty = BindableProperty.Create(
+        nameof(XAMLChildren),
         typeof(View),
         typeof(Widget),
         default(View));
@@ -37,9 +37,9 @@ public partial class Widget : ContentView
         get => (string)GetValue(TitleProperty);
         set => SetValue(TitleProperty, value);
     }
-    public View Content
+    public View XAMLChildren
     {
-        get => (View)GetValue(ContentProperty);
-        set => SetValue(ContentProperty, value);
+        get => (View)GetValue(XAMLChildrenProperty);
+        set => SetValue(XAMLChildrenProperty, value);
     }
 }

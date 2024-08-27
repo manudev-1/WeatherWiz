@@ -34,6 +34,7 @@ namespace WeatherWiz
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                    fonts.AddFont("MaterialIcons-Regular.ttf", "MaterialIcon");
                     fonts.AddFont("Montserrat-Bold.ttf", "MontSerratBold");
                     fonts.AddFont("Montserrat-Medium.ttf", "MontSerratMedium");
                     fonts.AddFont("Montserrat-Regular.ttf", "MontSerrat");

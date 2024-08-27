@@ -11,9 +11,17 @@
                     <RowDefinition Height="90*"/>
                 </Grid.RowDefinitions>
                 <StackLayout Grid.Row="0"
-                             Orientation="Horizontal">
-                    <Image Source="{Binding ImageSource}" 
-                           WidthRequest="25"/>
+                             Orientation="Horizontal"
+                             Spacing="5">
+                    <Image WidthRequest="25"
+                           Opacity="0.6">
+                        <Image.Source>
+                            <FontImageSource Glyph="{Binding ImageSource}"
+                                             FontFamily="MaterialIcon"
+                                             Size="25"
+                                             Color="#EBEBF5"/>
+                        </Image.Source>
+                    </Image>
                     <Label Text="{Binding Title}"
                            FontFamily="MontSerratSemibold"
                            TextColor="#EBEBF5" 
@@ -21,7 +29,7 @@
                            VerticalOptions="Center"/>
                 </StackLayout>
                 <StackLayout Grid.Row="1">
-                    <ContentPresenter Content="{Binding Content}"/>
+                    <ContentView Content="{Binding XAMLChildren}"/>
                 </StackLayout>
             </Grid>
             <Border.StrokeShape>

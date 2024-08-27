@@ -142,8 +142,8 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="10*"/>
-                        <RowDefinition Height="70*"/>
                         <RowDefinition Height="20*"/>
+                        <RowDefinition Height="70*"/>
                     </Grid.RowDefinitions>
                     <StackLayout Grid.Row="0" 
                                  HorizontalOptions="CenterAndExpand"
@@ -171,7 +171,16 @@
                         </CollectionView.ItemTemplate>
                     </CollectionView>
                     <StackLayout Grid.Row="2">
-                        <component:Widget ImageSource="air" Title="Air Pollution"/>
+                        <component:Widget ImageSource="&#xe3a5;" Title="Air Pollution">
+                            <component:Widget.XAMLChildren>
+                                <StackLayout>
+                                    <StackLayout.BindingContext>
+                                        <vm:AirPollutionViewModel />
+                                    </StackLayout.BindingContext>
+                                    <Label Text="{Binding Test}" />
+                                </StackLayout>
+                            </component:Widget.XAMLChildren>
+                        </component:Widget>
                     </StackLayout>
                 </Grid>
             </StackLayout>
