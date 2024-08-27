@@ -22,11 +22,11 @@ namespace WeatherWiz
 
                 static void MakeStatusBarTranslucent(Android.App.Activity activity)
                 {
-                    activity.Window.SetFlags(Android.Views.WindowManagerFlags.LayoutNoLimits, Android.Views.WindowManagerFlags.LayoutNoLimits);
+                    activity.Window?.SetFlags(Android.Views.WindowManagerFlags.LayoutNoLimits, Android.Views.WindowManagerFlags.LayoutNoLimits);
 
-                    activity.Window.ClearFlags(Android.Views.WindowManagerFlags.TranslucentStatus);
+                    activity.Window?.ClearFlags(Android.Views.WindowManagerFlags.TranslucentStatus);
 
-                    activity.Window.SetStatusBarColor(Android.Graphics.Color.Transparent);
+                    activity.Window?.SetStatusBarColor(Android.Graphics.Color.Transparent);
                 }
 #endif
                 })
@@ -42,11 +42,13 @@ namespace WeatherWiz
                 });
 
             var a = Assembly.GetExecutingAssembly();
-            using var stream = a.GetManifestResourceStream("WeatherWiz.appsettings.json");
+            using Stream? stream = a.GetManifestResourceStream("WeatherWiz.appsettings.json");
 
+#pragma warning disable CS8604 // Possible null reference argument.
             var config = new ConfigurationBuilder()
                         .AddJsonStream(stream)
                         .Build();
+#pragma warning restore CS8604 // Possible null reference argument.
 
             foreach (var kv in config.AsEnumerable())
                 Environment.SetEnvironmentVariable(kv.Key, kv.Value);

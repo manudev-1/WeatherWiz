@@ -1,15 +1,23 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Timers;
 using System.Windows.Input;
+using Microsoft.Maui;
 using Microsoft.Maui.Controls;
+using Newtonsoft.Json;
 using WeatherWiz.Models;
 
 namespace WeatherWiz.ViewModels
 {
+    public class EventParams
+    {
+        public object? Sender { get; set; }
+        public PanUpdatedEventArgs? EventArgs { get; set; }
+    }
     public class MainPageViewModel : BaseViewModel
     {
         // Attribute
@@ -24,13 +32,16 @@ namespace WeatherWiz.ViewModels
         private Tuple<double?, double?>? _coords;
         private ImageSource? _imageSource;
         private WeatherResumeResponse? _weatherDay;
+        private WeatherFiveDaysResponse? _weatherWeek;
         private int _temp;
         private string? _descr;
         private int _highTemp;
         private int _lowTemp;
         private int _translationY;
+        private bool _opened;
 
         // Property
+        public ObservableCollection<object> Forecasts { get; set; } = new();
         public string? Location
         {
             get => _location;
@@ -41,7 +52,8 @@ namespace WeatherWiz.ViewModels
                     Task.Run(async () => 
                     {
                         Time = await tzService.GetTimeOnly(Coords?.Item1, Coords?.Item2);
-                        WeatherDay = await weatherService.GetTodayResume(value.Split(",")[0]);
+                        WeatherDay = await weatherService.GetTodayResume(value?.Split(",")[0] ?? "");
+                        WeatherWeek = await weatherService.GetFiveDays(value?.Split(",")[0] ?? "");
                     });
                 }
             }
@@ -53,10 +65,12 @@ namespace WeatherWiz.ViewModels
             {
                 if (SetProperty(ref _time, value))
                 {
+#pragma warning disable CS8629 // Nullable value type may be null.
                     if (value.Value.Hour is >= 6 and < 8) ImageSource = "sunrise.jpg";
                     else if (value.Value.Hour is >= 8 and < 18) ImageSource = "day.jpg";
                     else if (value.Value.Hour is >= 18 and < 19) ImageSource = "sunset.jpg";
                     else ImageSource = "night.jpg";
+#pragma warning restore CS8629 // Nullable value type may be null.
                 }
             }
         }
@@ -77,13 +91,42 @@ namespace WeatherWiz.ViewModels
             { 
                 if(SetProperty(ref _weatherDay, value))
                 {
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
                     Temp = (int)value.Main.Temp;
-                    
-                    TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
-                    Description = textInfo.ToTitleCase(value.Weather[0].Description);
-
                     HigherTemp = (int)value.Main.Temp_max;
                     LowerTemp = (int)value.Main.Temp_min;
+
+                    Forecasts.Add(new WeatherForecast() { Time = "Now", Image = $"https://openweathermap.org/img/wn/{value?.Weather?[0].Icon}@2x.png", Temperature = (int)value.Main.Temp });
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+
+                    TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+                    Description = textInfo.ToTitleCase(value?.Weather?[0].Description ?? "");
+                } 
+            }
+        }
+        public WeatherFiveDaysResponse? WeatherWeek
+        {
+            get { return _weatherWeek; }
+            set 
+            {
+                DateTime? previousDate = null;
+                if (SetProperty(ref _weatherWeek, value))
+                {
+                    value.List.ForEach(el =>
+                    {
+                        DateTime currentDate = el.Dt_txt.Value.Date;
+
+                        if (previousDate.HasValue && previousDate.Value != currentDate) Forecasts.Add(new Separator());
+                        
+                        Forecasts.Add(new WeatherForecast()
+                        {
+                            Time = el.Dt_txt.HasValue ? el.Dt_txt.Value.ToString("H tt") : "",
+                            Image = $"https://openweathermap.org/img/wn/{el.Weather?[0].Icon}@2x.png",
+                            Temperature = (int)el.Main.Temp
+                        });
+
+                        previousDate = currentDate;
+                    });
                 } 
             }
         }
@@ -112,6 +155,11 @@ namespace WeatherWiz.ViewModels
             get { return _translationY; }
             set { SetProperty(ref _translationY, value); }
         }
+        public bool Opened
+        {
+            get { return _opened; }
+            set { SetProperty(ref _opened, value); }
+        }
 
         // Method
         public MainPageViewModel()
@@ -128,7 +176,7 @@ namespace WeatherWiz.ViewModels
             _timer.Start();
 
             TraslationY = 650;
-            _panUpdateCommand = new Command<PanUpdatedEventArgs>(PanUpdate);
+            _panUpdateCommand = new Command<EventParams>(ExecutePanUpdate);
         }
         public async Task GetCurrentLocationAsync()
         {
@@ -164,29 +212,48 @@ namespace WeatherWiz.ViewModels
         } // End GetCurrentLocationAsync
         private async Task UpdateTimeAsync()
         {
-            var result = await _webView.EvaluateJavaScriptAsync($"typeof updateTime === 'function'");
-            if (result == "true")
-            {
-                await _webView.EvaluateJavaScriptAsync($"updateTime('{Time.Value:HH:mm}')");
-            }
-            else
-            {
-                Debug.WriteLine("JavaScript function 'updateTime' is not defined.");
-            }
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+#pragma warning disable CS8629 // Nullable value type may be null.
+            await _webView.EvaluateJavaScriptAsync($"updateTime('{Time.Value:HH:mm}')");
+#pragma warning restore CS8629 // Nullable value type may be null.
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
         } // End UpdateTimeAsync
-        public void PanUpdate(PanUpdatedEventArgs e)
+        private void ExecutePanUpdate(EventParams e)
         {
-            Debug.WriteLine(TraslationY);
-            switch (e.StatusType)
+            _ = PanUpdate(e);
+        }
+        public async Task PanUpdate(EventParams e)
+        {
+            var border = e.Sender as Border;
+            switch (e.EventArgs?.StatusType)
             {
                 case GestureStatus.Started:
                 case GestureStatus.Running:
-                    TraslationY += (int)e.TotalY;
+                    border?.SetBinding(Border.TranslationYProperty, new Binding("TraslationY", source: this));
+                    int previous = TraslationY + (int)e.EventArgs.TotalY;
+                    if (previous < 0)
+                    {
+                        if (e.EventArgs.TotalY < 0) 
+                        { 
+                            previous = 0;
+                            Opened = true;
+                        }
+                    }
+                    else Opened = false;
+                    TraslationY = previous;
                     break;
                 case GestureStatus.Canceled:
                 case GestureStatus.Completed:
-                    if (TraslationY <= 500) TraslationY = 0;
-                    else TraslationY = 650;
+                    int finalY = TraslationY <= 500 ? 0 : 650;
+
+#pragma warning disable CS8604 // Possible null reference argument.
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+                    await border.TranslateTo(border.TranslationX, finalY, 250, Easing.Linear);
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+#pragma warning restore CS8604 // Possible null reference argument.
+                    if (finalY == 0) Opened = true;
+                    else Opened = false;
+                    TraslationY = finalY;
                     break;
             } // End Switch
         } // End PanUpdate

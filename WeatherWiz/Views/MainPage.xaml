@@ -2,11 +2,47 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:WeatherWiz.ViewModels"
+             xmlns:m="clr-namespace:WeatherWiz.Models"
+             xmlns:component="clr-namespace:WeatherWiz.Components"
              x:Class="WeatherWiz.MainPage"
              Shell.NavBarIsVisible="False">
     <ContentPage.BindingContext>
         <vm:MainPageViewModel />
     </ContentPage.BindingContext>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <DataTemplate x:Key="SeparatorTemplate">
+                <BoxView HeightRequest="100" WidthRequest="1" VerticalOptions="FillAndExpand">
+                    <BoxView.Background>
+                        <RadialGradientBrush>
+                            <GradientStop Color="#fff" Offset="0.1" />
+                            <GradientStop Color="Transparent" Offset="1.0" />
+                        </RadialGradientBrush>
+                    </BoxView.Background>
+                </BoxView>
+            </DataTemplate>
+            <DataTemplate x:Key="ForecastTemplate">
+                <Border WidthRequest="60"
+            StrokeThickness="0.5"
+            BackgroundColor="{Binding TimeLabelColor}">
+                    <StackLayout Orientation="Vertical"
+                     Padding="10">
+                        <Label Text="{Binding Time}" 
+                   FontSize="11" 
+                   FontFamily="MontSerratSemibold"
+                   HorizontalOptions="Center"/>
+                        <Image Source="{Binding Image}"/>
+                        <Label Text="{Binding Temperature, StringFormat='{0}°'}" 
+                   FontSize="16"
+                   HorizontalOptions="Center"/>
+                    </StackLayout>
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="40" />
+                    </Border.StrokeShape>
+                </Border>
+            </DataTemplate>
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <Grid>
         <Image x:Name="bgImage" 
                Source="{Binding ImageSource}" 
@@ -20,12 +56,12 @@
                          HorizontalOptions="Center" 
                          VerticalOptions="Center"
                          Margin="25">
-                
+
                 <Label Text="{Binding Location}" 
                        FontSize="23" 
                        FontFamily="MontSerrat"/>
-                
-                <Label Text="{Binding Temp, StringFormat='{0}°C'}"
+
+                <Label Text="{Binding Temp, StringFormat='{0}°'}"
                        FontSize="48" 
                        FontFamily="MontSerratThin"
                        HorizontalOptions="Center"/>
@@ -48,18 +84,97 @@
                            FontFamily="MontSerratSemibold"
                            HorizontalOptions="Center"/>
                 </StackLayout>
-                
+
             </StackLayout>
             <WebView x:Name="webView"
                  Grid.Row="1"
                  BackgroundColor="transparent"/>
         </Grid>
-        <Border TranslationY="{Binding TraslationY}" 
-                Stroke="White">
-
-            <Border.StrokeShape>
-                <RoundRectangle CornerRadius="40" />
-            </Border.StrokeShape>
+        <Border Stroke="White"
+                x:Name="slider"
+                TranslationY="{Binding TraslationY}"
+                Padding="20">
+            <StackLayout>
+                <StackLayout IsVisible="{Binding Opened}"
+                             Margin="0, 30, 0, 0">
+                    <Label Text="{Binding Location}"
+                           HorizontalOptions="Center"
+                           FontSize="23" 
+                           FontFamily="MontSerrat"/>
+                    <StackLayout Orientation="Horizontal" 
+                             HorizontalOptions="Center">
+                    <Label Text="{Binding Temp, StringFormat='{0}°|'}"
+                           FontSize="16"
+                           FontFamily="MontSerratSemibold"
+                           TextColor="#EBEBF5" 
+                           Opacity="0.6"
+                           HorizontalOptions="Center"/>
+                    <Label Text="{Binding Description, StringFormat='{0}'}"
+                           FontSize="16"
+                           FontFamily="MontSerratSemibold"
+                           TextColor="#EBEBF5"
+                           Opacity="0.6"
+                           HorizontalOptions="Center"/>
+                </StackLayout>
+                </StackLayout>
+                <BoxView IsVisible="{Binding Opened}"
+                         HeightRequest="1" 
+                         HorizontalOptions="FillAndExpand"
+                         VerticalOptions="Center"
+                         Margin="10">
+                    <BoxView.Background>
+                        <RadialGradientBrush>
+                            <GradientStop Color="#fff"
+                          Offset="0.1" />
+                            <GradientStop Color="#00000000"
+                          Offset="1.0" />
+                        </RadialGradientBrush>
+                    </BoxView.Background>
+                </BoxView>
+                <Rectangle WidthRequest="48" 
+                           HeightRequest="5"
+                           BackgroundColor="#000"
+                           Opacity="0.3"
+                           HorizontalOptions="Center"
+                           Margin="10"
+                           RadiusX="50"
+                           RadiusY="50"/>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="10*"/>
+                        <RowDefinition Height="70*"/>
+                        <RowDefinition Height="20*"/>
+                    </Grid.RowDefinitions>
+                    <StackLayout Grid.Row="0" 
+                                 HorizontalOptions="CenterAndExpand"
+                                 Spacing="25"
+                                 Orientation="Horizontal">
+                        <Label Text="Hourly Forecast"
+                               FontFamily="MontSerratSemibold"
+                               TextColor="#EBEBF5" 
+                               Opacity="0.6"/>
+                        <Label Text="Weekly Forecast"
+                               FontFamily="MontSerratSemibold"
+                               TextColor="#EBEBF5"
+                               Opacity="0.6"/>
+                    </StackLayout>
+                    <CollectionView ItemsSource="{Binding Forecasts}"
+                                    Grid.Row="1"
+                                    Margin="0, 20">
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10"/>
+                        </CollectionView.ItemsLayout>
+                        <CollectionView.ItemTemplate>
+                            <m:ForecastTemplateSelector 
+                                ForecastTemplate="{StaticResource ForecastTemplate}"
+                                SeparatorTemplate="{StaticResource SeparatorTemplate}"/>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    <StackLayout Grid.Row="2">
+                        <component:Widget ImageSource="air" Title="Air Pollution"/>
+                    </StackLayout>
+                </Grid>
+            </StackLayout>
             <Border.Background>
                 <LinearGradientBrush>
                     <GradientStop Color="#2E335A"
@@ -68,6 +183,9 @@
                           Offset="1.0" />
                 </LinearGradientBrush>
             </Border.Background>
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="40" />
+            </Border.StrokeShape>
             <Border.GestureRecognizers>
                 <PanGestureRecognizer PanUpdated="PanGestureRecognizer_PanUpdated"/>
             </Border.GestureRecognizers>

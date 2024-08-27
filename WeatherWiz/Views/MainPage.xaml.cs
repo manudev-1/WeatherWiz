@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
+using WeatherWiz.Models;
 using WeatherWiz.ViewModels;
 
 namespace WeatherWiz
@@ -13,10 +15,10 @@ namespace WeatherWiz
                 Url = "index.html"
             };
         } // End Constructor
-        private void PanGestureRecognizer_PanUpdated(object sender, PanUpdatedEventArgs e)
+        private async void PanGestureRecognizer_PanUpdated(object sender, PanUpdatedEventArgs e)
         {
             var viewModel = (MainPageViewModel)BindingContext;
-            viewModel.PanUpdate(e);
+            await viewModel.PanUpdate(new() { EventArgs = e, Sender = sender }); 
         } // End PanGestureRecognizer_PanUpdated
     } // End class
 } // End namespace
