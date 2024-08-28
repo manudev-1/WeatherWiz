@@ -50,7 +50,7 @@ namespace WeatherWiz.Models
     {
         public int All { get; set; }
     } // End WeatherDayCloudResponse
-    public class WeatherDayWindResponse 
+    public class WeatherDayWindResponse
     {
         public double Speed { get; set; }
         public int Deg { get; set; }
@@ -76,7 +76,7 @@ namespace WeatherWiz.Models
         public int Id { get; set; }
         public string? Name { get; set; }
         public int Cod { get; set; }
-    }
+    } // End WeatherResumeResponse
     public class WeatherResumeCoordResponse
     {
         public double Lon { get; set; }
@@ -114,5 +114,31 @@ namespace WeatherWiz.Models
         public int Sunset { get; set; }
     } // End WeatherResumeSysResponse
 
+    public class WeatherAirPollutionResponse : ObjectLog
+    {
+        public WeatherResumeCoordResponse? Coord { get; set; }
+        public List<WeatherAirDataResponse>? List { get; set; }
 
+    } // End WeatherAirPollutionResponse
+    public class WeatherAirDataResponse
+    {
+        public WeatherAirDataMainResponse? Main { get; set; }
+        public WeatherAirDataCompResponse? Components { get; set; }
+        public int Dt { get; set; }
+    } // End WeatherAirDataResponse
+    public class WeatherAirDataMainResponse
+    {
+        public int Aqi { get; set; }
+    } // End WeatherAirDataMainResponse
+    public class WeatherAirDataCompResponse
+    {
+        public double Co { get; set; }
+        public double No { get; set; }
+        public double No2 { get; set; }
+        public double O3 { get; set; }
+        public double So3 { get; set; }
+        public double Pm2_5 { get; set; }
+        public double Pm10 { get; set; }
+        public double Nh3 { get; set; }
+    } // End WeatherAirDataCompResponse
 } // End Namespace

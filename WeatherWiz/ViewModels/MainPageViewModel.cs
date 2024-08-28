@@ -10,6 +10,7 @@ using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Newtonsoft.Json;
 using WeatherWiz.Models;
+using WeatherWiz.Util;
 
 namespace WeatherWiz.ViewModels
 {
@@ -25,7 +26,6 @@ namespace WeatherWiz.ViewModels
         private readonly WeatherService weatherService = new();
         private readonly WebView? _webView;
         private readonly System.Timers.Timer _timer;
-        private readonly ICommand _panUpdateCommand;
 
         private string? _location;
         private TimeOnly? _time; 
@@ -112,18 +112,22 @@ namespace WeatherWiz.ViewModels
                 DateTime? previousDate = null;
                 if (SetProperty(ref _weatherWeek, value))
                 {
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
                     value.List.ForEach(el =>
                     {
+#pragma warning disable CS8629 // Nullable value type may be null.
                         DateTime currentDate = el.Dt_txt.Value.Date;
+#pragma warning restore CS8629 // Nullable value type may be null.
 
                         if (previousDate.HasValue && previousDate.Value != currentDate) Forecasts.Add(new Separator());
-                        
+
                         Forecasts.Add(new WeatherForecast()
                         {
                             Time = el.Dt_txt.HasValue ? el.Dt_txt.Value.ToString("H tt") : "",
                             Image = $"https://openweathermap.org/img/wn/{el.Weather?[0].Icon}@2x.png",
                             Temperature = (int)el.Main.Temp
                         });
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
 
                         previousDate = currentDate;
                     });
@@ -166,7 +170,9 @@ namespace WeatherWiz.ViewModels
         {
             Task.Run(async () => 
             {
-                await GetCurrentLocationAsync();
+                CurrentLocation? resp = await Helper.GetCurrentLocationAsync();
+                Coords = resp?.Coords;
+                Location = resp?.LocationResult;
                 await UpdateTimeAsync();
             });
             _webView = new();
@@ -176,40 +182,7 @@ namespace WeatherWiz.ViewModels
             _timer.Start();
 
             TraslationY = 650;
-            _panUpdateCommand = new Command<EventParams>(ExecutePanUpdate);
         }
-        public async Task GetCurrentLocationAsync()
-        {
-            try
-            {
-                var location = await Geolocation.GetLastKnownLocationAsync();
-
-                if (location == null)
-                {
-                    location = await Geolocation.GetLocationAsync(new GeolocationRequest
-                    {
-                        DesiredAccuracy = GeolocationAccuracy.High,
-                        Timeout = TimeSpan.FromSeconds(30)
-                    });
-                }
-
-                Coords = Tuple.Create(location?.Latitude, location?.Longitude);
-
-                if (location != null)
-                {
-                    var placemarks = await Geocoding.GetPlacemarksAsync(location.Latitude, location.Longitude);
-                    var placemark = placemarks?.FirstOrDefault();
-
-                    if (placemark != null) Location = $"{placemark.Locality}, {placemark.CountryName}";
-                    else Location = "Posizione non trovata";
-                }
-                else Location = "Impossibile ottenere la posizione";
-            }
-            catch (Exception ex)
-            {
-                Location = $"Errore: {ex.Message}";
-            }
-        } // End GetCurrentLocationAsync
         private async Task UpdateTimeAsync()
         {
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
@@ -218,10 +191,6 @@ namespace WeatherWiz.ViewModels
 #pragma warning restore CS8629 // Nullable value type may be null.
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
         } // End UpdateTimeAsync
-        private void ExecutePanUpdate(EventParams e)
-        {
-            _ = PanUpdate(e);
-        }
         public async Task PanUpdate(EventParams e)
         {
             var border = e.Sender as Border;
