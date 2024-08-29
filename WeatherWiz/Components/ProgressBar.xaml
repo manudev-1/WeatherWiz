@@ -11,8 +11,9 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <BoxView HorizontalOptions="FillAndExpand" 
-                 VerticalOptions="FillAndExpand" 
-                 HeightRequest="2" >
+                         VerticalOptions="FillAndExpand" 
+                         HeightRequest="2"
+                         InputTransparent="True">
                     <BoxView.Background>
                         <LinearGradientBrush EndPoint="1,0">
                             <GradientStop Color="#3758b0" Offset="0.1" />
@@ -21,17 +22,14 @@
                     </BoxView.Background>
                 </BoxView>
                 <Rectangle WidthRequest="10" 
-                   HeightRequest="10"
-                   Background="white"
-                   Stroke="#272453"
-                   RadiusX="20"
-                   RadiusY="20"
-                   StrokeThickness="5"
-                   HorizontalOptions="Start"
-                   TranslationX="{Binding Progress}">
-                    <Rectangle.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
-                    </Rectangle.GestureRecognizers>
+                           HeightRequest="10"
+                           Background="white"
+                           Stroke="#272453"
+                           RadiusX="20"
+                           RadiusY="20"
+                           StrokeThickness="5"
+                           HorizontalOptions="Start"
+                           TranslationX="{Binding Progress}">
                 </Rectangle>
             </Grid>
         </StackLayout>

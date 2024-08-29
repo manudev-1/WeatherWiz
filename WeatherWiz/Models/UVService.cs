@@ -10,12 +10,12 @@ namespace WeatherWiz.Models
 {
     internal class UVService : Api
     {
-        public UVService() : base("https://api.openuv.io/api/v1/", Environment.GetEnvironmentVariable("ApiKeyOpenWeather") ?? "") { }
+        public UVService() : base("https://api.openuv.io/api/v1/", Environment.GetEnvironmentVariable("ApiKeyOpenUV") ?? "") { }
         public async Task<UVResponse?> GetCurrentUV(double lat, double lon)
         {
-            this.HttpClient.DefaultRequestHeaders.Add("x-access-token", ApiKey);
-            var response = await HttpClient.GetStringAsync($"weather?lat={lat}&lon={lon}");
-            Debug.WriteLine(response);
+            HttpClient.DefaultRequestHeaders.Add("x-access-token", ApiKey);
+
+            var response = await HttpClient.GetStringAsync($"uv?lat={lat}&lng={lon}");
             var data = JsonConvert.DeserializeObject<UVResponse?>(response);
 
             return data;

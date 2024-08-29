@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace WeatherWiz.Components;
 
 public partial class ProgressBar : ContentView
@@ -18,10 +20,5 @@ public partial class ProgressBar : ContentView
     {
         get => (string)GetValue(ProgressProperty);
         set => SetValue(ProgressProperty, value);
-    }
-
-    private void TapGestureRecognizer_Tapped(object sender, TappedEventArgs e)
-    {
-
     }
 }

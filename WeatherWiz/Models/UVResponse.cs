@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using ObjCRuntime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,17 +13,17 @@ namespace WeatherWiz.Models
     }
     public class UVResultResponse
     {
-        public double UV { get; set; }
+        public double Uv { get; set; }
         [JsonConverter(typeof(CustomDateTimeConverter))]
-        public DateTime UVTime { get; set; }
-        public double UVMax { get; set; }
+        public DateTime Uv_time { get; set; }
+        public double Uv_max { get; set; }
         [JsonConverter(typeof(CustomDateTimeConverter))]
-        public DateTime UVMaxTime { get; set; }
+        public DateTime Uv_max_time { get; set; }
         public double Ozone { get; set; }
         [JsonConverter(typeof(CustomDateTimeConverter))]
-        public DateTime OzoneTime { get; set; }
-        public UVSafeExposureTimeResponse? SafeExposureTime { get; set; }
-        public UVSunInfoResponse? SunInfo { get; set; }
+        public DateTime Ozone_time { get; set; }
+        public UVSafeExposureTimeResponse? Safe_exposure_time { get; set; }
+        public UVSunInfoResponse? Sun_info { get; set; }
     } // End UVResultResponse
     public class UVSafeExposureTimeResponse
     {
@@ -37,13 +36,13 @@ namespace WeatherWiz.Models
     } // End UVSafeExposureTimeResponse
     public class UVSunInfoResponse
     {
-        public UVSunTimesResponse? SunTimes { get; set; }
-        public UVSunPositionResponse? SunPosition { get; set; }
+        public UVSunTimesResponse? Sun_times { get; set; }
+        public UVSunPositionResponse? Sun_position { get; set; }
     } // End UVSunInfoResponse
     public class UVSunTimesResponse
     {
         [JsonConverter(typeof(CustomDateTimeConverter))]
-        public DateTime SolarNoon { get; set; }
+        public DateTime Solarnoon { get; set; }
         [JsonConverter(typeof(CustomDateTimeConverter))]
         public DateTime Nadir { get; set; }
         [JsonConverter(typeof(CustomDateTimeConverter))]
@@ -51,25 +50,25 @@ namespace WeatherWiz.Models
         [JsonConverter(typeof(CustomDateTimeConverter))]
         public DateTime Sunset { get; set; }
         [JsonConverter(typeof(CustomDateTimeConverter))]
-        public DateTime SunriseEnd { get; set; }
+        public DateTime Sunriseend { get; set; }
         [JsonConverter(typeof(CustomDateTimeConverter))]
-        public DateTime SunsetStart { get; set; }
+        public DateTime Sunsetstart { get; set; }
         [JsonConverter(typeof(CustomDateTimeConverter))]
         public DateTime Dawn { get; set; }
         [JsonConverter(typeof(CustomDateTimeConverter))]
         public DateTime Dusk { get; set; }
         [JsonConverter(typeof(CustomDateTimeConverter))]
-        public DateTime NauticalDawn { get; set; }
+        public DateTime Nauticaldawn { get; set; }
         [JsonConverter(typeof(CustomDateTimeConverter))]
-        public DateTime NauticalDusk { get; set; }
+        public DateTime Nauticaldusk { get; set; }
         [JsonConverter(typeof(CustomDateTimeConverter))]
-        public DateTime NightEnd { get; set; }
+        public DateTime Nightend { get; set; }
         [JsonConverter(typeof(CustomDateTimeConverter))]
         public DateTime Night { get; set; }
         [JsonConverter(typeof(CustomDateTimeConverter))]
-        public DateTime GoldenHourEnd { get; set; }
+        public DateTime Goldenhourend { get; set; }
         [JsonConverter(typeof(CustomDateTimeConverter))]
-        public DateTime GoldenHour { get; set; }
+        public DateTime Goldenhour { get; set; }
     } // End UVSunTimesResponse
     public class UVSunPositionResponse
     {

@@ -9,14 +9,15 @@ namespace WeatherWiz.Models
 {
     public class WeatherForecast
     {
-        public string? Time { get; set; } = string.Empty;
+        public DateTime Time { get; set; }
+        public string? TimeDisplay { get; set; } = string.Empty;
         public ImageSource? Image { get; set; }
         public int Temperature { get; set; }
         public Color? TimeLabelColor
         {
             get
             {
-                if (Time == "Now")
+                if (TimeDisplay == "Now")
                     return Color.FromArgb("48319D");
                 else return Color.FromArgb("00000000");
             }

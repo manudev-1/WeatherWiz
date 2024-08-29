@@ -51,7 +51,7 @@ namespace WeatherWiz.ViewModels
                 {
                     Task.Run(async () => 
                     {
-                        Time = await tzService.GetTimeOnly(Coords?.Item1, Coords?.Item2);
+                        Time = await tzService.GetTimeOnly(App.Coords?.Item1, App.Coords?.Item2);
                         WeatherDay = await weatherService.GetTodayResume(value?.Split(",")[0] ?? "");
                         WeatherWeek = await weatherService.GetFiveDays(value?.Split(",")[0] ?? "");
                     });
@@ -74,11 +74,6 @@ namespace WeatherWiz.ViewModels
                 }
             }
         }
-        public Tuple<double?,double?>? Coords
-        {
-            get { return _coords; }
-            set { SetProperty(ref _coords, value); }
-        }
         public ImageSource? ImageSource
         {
             get { return _imageSource; }
@@ -95,8 +90,12 @@ namespace WeatherWiz.ViewModels
                     Temp = (int)value.Main.Temp;
                     HigherTemp = (int)value.Main.Temp_max;
                     LowerTemp = (int)value.Main.Temp_min;
-
-                    Forecasts.Add(new WeatherForecast() { Time = "Now", Image = $"https://openweathermap.org/img/wn/{value?.Weather?[0].Icon}@2x.png", Temperature = (int)value.Main.Temp });
+                    DateTime? dt_txt = DateTimeOffset.FromUnixTimeSeconds(value.dt).DateTime;
+                    Forecasts.Add(new WeatherForecast() { 
+                        Time = (DateTime)dt_txt, 
+                        TimeDisplay = dt_txt.HasValue ? dt_txt.Value.ToString("H tt") : "", 
+                        Image = $"https://openweathermap.org/img/wn/{value?.Weather?[0].Icon}@2x.png", 
+                        Temperature = (int)value.Main.Temp });
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
 
                     TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
@@ -123,7 +122,8 @@ namespace WeatherWiz.ViewModels
 
                         Forecasts.Add(new WeatherForecast()
                         {
-                            Time = el.Dt_txt.HasValue ? el.Dt_txt.Value.ToString("H tt") : "",
+                            Time = (DateTime)el.Dt_txt,
+                            TimeDisplay = el.Dt_txt.HasValue ? el.Dt_txt.Value.ToString("H tt") : "",
                             Image = $"https://openweathermap.org/img/wn/{el.Weather?[0].Icon}@2x.png",
                             Temperature = (int)el.Main.Temp
                         });
@@ -131,6 +131,15 @@ namespace WeatherWiz.ViewModels
 
                         previousDate = currentDate;
                     });
+
+                    DateTime currentTime = DateTime.Now;
+                    var weatherForecasts = Forecasts.OfType<WeatherForecast>();
+
+                    var closestForecast = weatherForecasts
+                                            .OrderBy(f => Math.Abs((f.Time - currentTime).Ticks)) 
+                                            .FirstOrDefault();
+
+                    if (closestForecast != null) closestForecast.TimeDisplay = "Now";
                 } 
             }
         }
@@ -170,9 +179,7 @@ namespace WeatherWiz.ViewModels
         {
             Task.Run(async () => 
             {
-                CurrentLocation? resp = await Helper.GetCurrentLocationAsync();
-                Coords = resp?.Coords;
-                Location = resp?.LocationResult;
+                Location = App.CityName;
                 await UpdateTimeAsync();
             });
             _webView = new();

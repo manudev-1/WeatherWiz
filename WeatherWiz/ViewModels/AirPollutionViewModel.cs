@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -69,7 +70,6 @@ namespace WeatherWiz.ViewModels
         private readonly WeatherService weatherService = new();
 
         private WeatherAirPollutionResponse? _aqiState;
-		private Tuple<double?, double?>? _coords;
         private int _aqi;
         private string? _description;
 		private float _progress;
@@ -89,24 +89,6 @@ namespace WeatherWiz.ViewModels
                         ); 
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
 				}
-			}
-		}
-		public Tuple<double?, double?>? Coords
-		{
-			get { return _coords; }
-			set 
-			{ 
-				if (SetProperty(ref _coords, value)) 
-				{
-                    Task.Run(async () =>
-                    {
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-#pragma warning disable CS8629 // Nullable value type may be null.
-                        AQIState = await weatherService.GetAirPollution(value.Item1.Value, value.Item2.Value);
-#pragma warning restore CS8629 // Nullable value type may be null.
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
-                    });
-                } 
 			}
 		}
         public string? Description
@@ -138,8 +120,7 @@ namespace WeatherWiz.ViewModels
 		{
             Task.Run(async () =>
             {
-                var resp = await Helper.GetCurrentLocationAsync();
-				Coords = resp?.Coords;
+                AQIState = await weatherService.GetAirPollution(App.Coords.Item1.Value, App.Coords.Item2.Value);
             });
 
         } // End Constructor

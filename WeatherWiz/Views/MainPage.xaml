@@ -27,7 +27,7 @@
             BackgroundColor="{Binding TimeLabelColor}">
                     <StackLayout Orientation="Vertical"
                      Padding="10">
-                        <Label Text="{Binding Time}" 
+                        <Label Text="{Binding TimeDisplay}" 
                    FontSize="11" 
                    FontFamily="MontSerratSemibold"
                    HorizontalOptions="Center"/>
@@ -139,95 +139,117 @@
                            Margin="10"
                            RadiusX="50"
                            RadiusY="50"/>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="10*"/>
-                        <RowDefinition Height="20*"/>
-                        <RowDefinition Height="70*"/>
-                    </Grid.RowDefinitions>
-                    <StackLayout Grid.Row="0" 
-                                 HorizontalOptions="CenterAndExpand"
-                                 Spacing="25"
-                                 Orientation="Horizontal">
-                        <Label Text="Hourly Forecast"
-                               FontFamily="MontSerratSemibold"
-                               TextColor="#EBEBF5" 
-                               Opacity="0.6"/>
-                        <Label Text="Weekly Forecast"
-                               FontFamily="MontSerratSemibold"
-                               TextColor="#EBEBF5"
-                               Opacity="0.6"/>
-                    </StackLayout>
-                    <CollectionView ItemsSource="{Binding Forecasts}"
-                                    Grid.Row="1"
-                                    Margin="0, 20">
-                        <CollectionView.ItemsLayout>
-                            <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10"/>
-                        </CollectionView.ItemsLayout>
-                        <CollectionView.ItemTemplate>
-                            <m:ForecastTemplateSelector 
-                                ForecastTemplate="{StaticResource ForecastTemplate}"
-                                SeparatorTemplate="{StaticResource SeparatorTemplate}"/>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                    <StackLayout Grid.Row="2" Spacing="10">
-                        <component:Widget ImageSource="&#xe3a5;" Title="Air Pollution">
-                            <component:Widget.XAMLChildren>
-                                <StackLayout Padding="10">
-                                    <StackLayout.BindingContext>
-                                        <vm:AirPollutionViewModel />
-                                    </StackLayout.BindingContext>
-                                    <Label Text="{Binding Description}"
-                                           FontFamily="MontSerratSemibold"/>
-                                    <component:ProgressBar Progress="{Binding Progress}"/>
-                                    <BoxView Background="#312e53" HeightRequest="1"/>
-                                    <StackLayout Orientation="Horizontal" 
-                                                 Margin="0, 10, 0, 0">
-                                        <Label>
-                                            <Label.FormattedText>
-                                                <FormattedString>
+                <ScrollView>
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="10*"/>
+                            <RowDefinition Height="20*"/>
+                            <RowDefinition Height="70*"/>
+                        </Grid.RowDefinitions>
+                        <StackLayout Grid.Row="0" 
+                                     HorizontalOptions="CenterAndExpand"
+                                     Spacing="25"
+                                     Orientation="Horizontal">
+                            <Label Text="Hourly Forecast"
+                                   FontFamily="MontSerratSemibold"
+                                   TextColor="#EBEBF5" 
+                                   Opacity="0.6"/>
+                            <Label Text="Weekly Forecast"
+                                   FontFamily="MontSerratSemibold"
+                                   TextColor="#EBEBF5"
+                                   Opacity="0.6"/>
+                        </StackLayout>
+                        <CollectionView ItemsSource="{Binding Forecasts}"
+                                        Grid.Row="1"
+                                        Margin="0, 20">
+                            <CollectionView.ItemsLayout>
+                                <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10"/>
+                            </CollectionView.ItemsLayout>
+                            <CollectionView.ItemTemplate>
+                                <m:ForecastTemplateSelector 
+                                    ForecastTemplate="{StaticResource ForecastTemplate}"
+                                    SeparatorTemplate="{StaticResource SeparatorTemplate}"/>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                        <StackLayout Grid.Row="2" Spacing="10">
+                            <component:Widget ImageSource="&#xe3a5;" Title="Air Pollution">
+                                <component:Widget.XAMLChildren>
+                                    <StackLayout Padding="10">
+                                        <StackLayout.BindingContext>
+                                            <vm:AirPollutionViewModel />
+                                        </StackLayout.BindingContext>
+                                        <Label Text="{Binding Description}"
+                                               FontFamily="MontSerratSemibold"/>
+                                        <component:ProgressBar Progress="{Binding Progress}"/>
+                                        <BoxView Background="#312e53" HeightRequest="1"/>
+                                        <StackLayout Orientation="Horizontal" 
+                                                     Margin="0, 10, 0, 0">
+                                            <Label>
+                                                <Label.FormattedText>
+                                                    <FormattedString>
                                                         <Span Text="See more"
-                                                          FontFamily="MontSerrat"
-                                                          FontSize="16">
+                                                              FontFamily="MontSerrat"
+                                                              FontSize="16">
                                                         </Span>
-                                                </FormattedString>
-                                            </Label.FormattedText>
-                                        </Label>
-                                        <Image WidthRequest="25"
-                                               Opacity="0.6"
-                                               HorizontalOptions="EndAndExpand">
-                                            <Image.Source>
-                                                <FontImageSource Glyph="&#xe5cc;"
-                                                                 FontFamily="MaterialIcon"
-                                                                 Size="25"
-                                                                 Color="#EBEBF5"/>
-                                            </Image.Source>
-                                        </Image>
-                                        <StackLayout.GestureRecognizers>
-                                            <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped" />
-                                        </StackLayout.GestureRecognizers>
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+                                            <Image WidthRequest="25"
+                                                   Opacity="0.6"
+                                                   HorizontalOptions="EndAndExpand">
+                                                <Image.Source>
+                                                    <FontImageSource Glyph="&#xe5cc;"
+                                                                     FontFamily="MaterialIcon"
+                                                                     Size="25"
+                                                                     Color="#EBEBF5"/>
+                                                </Image.Source>
+                                            </Image>
+                                            <StackLayout.GestureRecognizers>
+                                                <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped" />
+                                            </StackLayout.GestureRecognizers>
+                                        </StackLayout>
                                     </StackLayout>
-                                </StackLayout>
-                            </component:Widget.XAMLChildren>
-                        </component:Widget>
-                        <Grid ColumnSpacing="10">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="50*"/>
-                                <ColumnDefinition Width="50*"/>
-                            </Grid.ColumnDefinitions>
-                            <component:Widget Grid.Column="0" 
-                                              Title="UV Index"
-                                              ImageSource="&#xe518;">
-                                
+                                </component:Widget.XAMLChildren>
                             </component:Widget>
-                            <component:Widget Grid.Column="1" 
-                                              Title="Sunrise"
-                                              ImageSource="&#xe1c6;">
-                                
-                            </component:Widget>
-                        </Grid>
-                    </StackLayout>
-                </Grid>
+                            <Grid ColumnSpacing="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="50*"/>
+                                    <ColumnDefinition Width="50*"/>
+                                </Grid.ColumnDefinitions>
+                                <component:Widget Grid.Column="0" 
+                                                  Title="UV Index"
+                                                  ImageSource="&#xe518;">
+                                    <component:Widget.XAMLChildren>
+                                        <StackLayout HeightRequest="125">
+                                            <StackLayout.BindingContext>
+                                                <vm:UVViewModel />
+                                            </StackLayout.BindingContext>
+                                            <StackLayout Margin="0, 10"
+                                                         VerticalOptions="Center">
+                                                <Label Text="{Binding Index}"
+                                                       FontFamily="MontSerratSemibold"
+                                                       FontSize="24"/>
+                                                <Label Text="{Binding Description}"
+                                                       FontFamily="MontSerratSemibold"/>
+                                            </StackLayout>
+                                            <component:ProgressBar Progress="{Binding Progress}"/>
+                                        </StackLayout>
+                                    </component:Widget.XAMLChildren>
+                                </component:Widget>
+                                <component:Widget Grid.Column="1" 
+                                                  Title="Sunrise"
+                                                  ImageSource="&#xe1c6;">
+                                    <component:Widget.XAMLChildren>
+                                        <StackLayout HeightRequest="125">
+
+                                        </StackLayout>
+                                    </component:Widget.XAMLChildren>
+                                </component:Widget>
+                            </Grid>
+                        </StackLayout>
+                    </Grid>
+                </ScrollView>
             </StackLayout>
             <Border.Background>
                 <LinearGradientBrush>
