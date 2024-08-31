@@ -22,6 +22,8 @@ namespace WeatherWiz.ViewModels
 		private int _index;
 		private string _description;
 		private int _progress;
+		private string? _timeSunRise;
+		private string? _timeSunSet;
 
 		// Property
 		public int Index
@@ -46,6 +48,16 @@ namespace WeatherWiz.ViewModels
             get { return _progress; }
             set { SetProperty(ref _progress, value); }
         }
+        public string? TimeSunRise
+        {
+            get { return _timeSunRise; }
+            set { SetProperty(ref _timeSunRise, value); }
+        }
+        public string? TimeSunSet
+        {
+            get { return _timeSunSet; }
+            set { SetProperty(ref _timeSunSet, value); }
+        }
 
         // Method
         public UVViewModel()
@@ -55,6 +67,8 @@ namespace WeatherWiz.ViewModels
 			{
 				var resp = await _uvService.GetCurrentUV(App.Coords.Item1.Value, App.Coords.Item2.Value);
 				Index = (int)resp.Result.Uv;
+                TimeSunRise = resp.Result.Sun_info.Sun_times.Sunrise.ToLocalTime().ToString("h:mm tt");
+                TimeSunSet = resp.Result.Sun_info.Sun_times.Sunset.ToLocalTime().ToString("h:mmtt");
 			});
 		} // End Constructor
 		private string ScaleSelection(int index)
@@ -65,7 +79,7 @@ namespace WeatherWiz.ViewModels
         } // End ScaleSelection
 		private int ProportionalProgress(int index)
 		{
-			return index * 14;
+			return Math.Max(0, index * 14);
         } // End ProportionalProgress
     } // End UVViewModel
 }

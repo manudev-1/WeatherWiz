@@ -69,6 +69,7 @@ namespace WeatherWiz.Models
         public WeatherResumeMainResponse? Main { get; set; }
         public int Visibility { get; set; }
         public WeatherResumeWindResponse? Wind { get; set; }
+        public WeatherResumeRainResponse? Rain { get; set; }
         public WeatherDayCloudResponse? Cloud { get; set; }
         public int dt { get; set; }
         public WeatherResumeSysResponse? Sys { get; set; }
@@ -104,7 +105,13 @@ namespace WeatherWiz.Models
     {
         public double Speed { get; set; }
         public int Deg { get; set; }
+        public double? Gust { get; set; }
     } // End WeatherResumeWindResponse
+    public class WeatherResumeRainResponse
+    {
+        [JsonProperty("1h")]
+        public double? Hour { get; set; }
+    }
     public class WeatherResumeSysResponse
     {
         public int Type { get; set; }

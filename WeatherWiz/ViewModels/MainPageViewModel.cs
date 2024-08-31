@@ -39,6 +39,9 @@ namespace WeatherWiz.ViewModels
         private int _lowTemp;
         private int _translationY;
         private bool _opened;
+        private double _windspeed;
+        private double _winddeg;
+        private double _rainfall;
 
         // Property
         public ObservableCollection<object> Forecasts { get; set; } = new();
@@ -100,6 +103,10 @@ namespace WeatherWiz.ViewModels
 
                     TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
                     Description = textInfo.ToTitleCase(value?.Weather?[0].Description ?? "");
+                    WindSpeed = value?.Wind == null ? 0 : value.Wind.Speed;
+                    WindDeg = value?.Wind == null ? 0 : value.Wind.Deg;
+
+                    Rainfall = value.Rain == null ? 0d : value.Rain.Hour ?? 0d;
                 } 
             }
         }
@@ -172,6 +179,21 @@ namespace WeatherWiz.ViewModels
         {
             get { return _opened; }
             set { SetProperty(ref _opened, value); }
+        }
+        public double WindSpeed
+        {
+            get { return _windspeed; }
+            set { SetProperty(ref _windspeed, value); }
+        }
+        public double WindDeg
+        {
+            get { return _winddeg; }
+            set { SetProperty(ref _winddeg, value); }
+        }
+        public double Rainfall
+        {
+            get { return _rainfall; }
+            set { SetProperty(ref _rainfall, value); }
         }
 
         // Method
