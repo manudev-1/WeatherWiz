@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WeatherWiz.Util
 {
-    class CurrentLocation
+    public class CurrentLocation
     {
         public Tuple<double?, double?>? Coords { get; set; }
         public string? LocationResult { get; set; }
@@ -21,44 +21,57 @@ namespace WeatherWiz.Util
         {
             try
             {
-                var location = await Geolocation.GetLastKnownLocationAsync();
-                CurrentLocation result = new()
+                var resp = await MainThread.InvokeOnMainThreadAsync(async () =>
                 {
-                    Coords = (Tuple<double?, double?>?)null,
-                    LocationResult = ""
-                };
-
-                if (location == null)
+                    var resp = await PerformLocationUpdate();
+                    return resp;
+                });
+                return resp;
+                async Task<CurrentLocation?> PerformLocationUpdate()
                 {
-                    location = await Geolocation.GetLocationAsync(new GeolocationRequest
+                    var location = await Geolocation.GetLastKnownLocationAsync();
+                    CurrentLocation result = new()
                     {
-                        DesiredAccuracy = GeolocationAccuracy.High,
-                        Timeout = TimeSpan.FromSeconds(30)
-                    });
-                }
+                        Coords = (Tuple<double?, double?>?)null,
+                        LocationResult = ""
+                    };
 
-                result.Coords = Tuple.Create(location?.Latitude, location?.Longitude);
-
-                if (location != null)
-                {
-                    var placemarks = await Geocoding.GetPlacemarksAsync(location.Latitude, location.Longitude);
-                    var placemark = placemarks?.FirstOrDefault();
-
-                    if (placemark != null)
+                    if (location == null)
                     {
-                        result.LocationResult = $"{placemark.Locality}, {placemark.CountryName}";
-                        return result;
-                    } // End nested if
-                    result.LocationResult = "Posizione non trovata";
+                        location = await Geolocation.GetLocationAsync(new GeolocationRequest
+                        {
+                            DesiredAccuracy = GeolocationAccuracy.High,
+                            Timeout = TimeSpan.FromSeconds(30)
+                        });
+                    }
+
+                    result.Coords = Tuple.Create(location?.Latitude, location?.Longitude);
+
+                    if (location != null)
+                    {
+                        var placemarks = await Geocoding.GetPlacemarksAsync(location.Latitude, location.Longitude);
+                        var placemark = placemarks?.FirstOrDefault();
+
+                        if (placemark != null)
+                        {
+                            result.LocationResult = $"{placemark.Locality}, {placemark.CountryName}";
+                            return result;
+                        }
+                        else 
+                        { 
+                            result.LocationResult = "Posizione non trovata";
+                            return result;
+                        }
+                    }
+                    else result.LocationResult = "Impossibile ottenere la posizione";
+
                     return result;
-                } // End if
-                result.LocationResult = "Impossibile ottenere la posizione";
-                return result;
-            } // End try
-            catch (Exception ex)
+                }
+            }
+            catch (Exception)
             {
                 return null;
-            } // End catch
+            }
         } // End GetCurrentLocationAsync
     } // End Helper Class
 }

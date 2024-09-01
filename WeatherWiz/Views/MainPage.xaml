@@ -296,7 +296,8 @@
                                                   Title="Rainfall"
                                                   ImageSource="&#xe798;">
                                     <component:Widget.XAMLChildren>
-                                        <StackLayout HeightRequest="125">
+                                        <StackLayout HeightRequest="125"
+                                                     Spacing="20">
                                             <StackLayout.BindingContext>
                                                 <vm:MainPageViewModel />
                                             </StackLayout.BindingContext>
@@ -308,6 +309,16 @@
                                                         <Span Text="&#x0a;" />
                                                         <Span Text="in last hour" 
                                                               FontFamily="MontSerratSemibold"/>
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+                                            <Label>
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                        <Span Text="{Binding TomorrowRain, StringFormat='{0}'}" 
+                                                              FontFamily="MontSerrat"/>
+                                                        <Span Text=" mm exprected in next 24h."
+                                                              FontFamily="MontSerrat"/>
                                                     </FormattedString>
                                                 </Label.FormattedText>
                                             </Label>

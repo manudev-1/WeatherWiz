@@ -21,6 +21,7 @@ namespace WeatherWiz.Models
         public List<WeatherDaySpecResponse>? Weather { get; set; }
         public WeatherDayCloudResponse? Clouds { get; set; }
         public WeatherDayWindResponse? Wind { get; set; }
+        public WeatherDayRainResponse? Rain { get; set; }
         public int Visibility { get; set; }
         public double Pop { get; set; }
         public WeatherDaySysResponse? Sys { get; set; }
@@ -55,6 +56,11 @@ namespace WeatherWiz.Models
         public double Speed { get; set; }
         public int Deg { get; set; }
         public double gust { get; set; }
+    } // End WeatherDayWindResponse
+    public class WeatherDayRainResponse
+    {
+        [JsonProperty("3h")]
+        public double ThreeHours { get; set; }
     } // End WeatherDayWindResponse
     public class WeatherDaySysResponse
     {
@@ -148,4 +154,32 @@ namespace WeatherWiz.Models
         public double Pm10 { get; set; }
         public double Nh3 { get; set; }
     } // End WeatherAirDataCompResponse
+
+    public class WeatherForecast
+    {
+        public DateTime Time { get; set; }
+        public string? TimeDisplay { get; set; } = string.Empty;
+        public ImageSource? Image { get; set; }
+        public int Temperature { get; set; }
+        public Color? TimeLabelColor
+        {
+            get
+            {
+                if (TimeDisplay == "Now")
+                    return Color.FromArgb("48319D");
+                else return Color.FromArgb("00000000");
+            }
+        }
+    } // End WeatherForecast
+
+    public class WeatherDailySummary
+    {
+        public double AvgTemp { get; set; }
+        public double AvgFeelsLike { get; set; }
+        public double AvgHumidity { get; set; }
+        public double AvgPressure { get; set; }
+        public double AvgRain { get; set; }
+        public string? WeatherDescription { get; set; }
+        public DateTime Date { get; set; }
+    }
 } // End Namespace

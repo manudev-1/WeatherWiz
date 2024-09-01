@@ -63,15 +63,20 @@ namespace WeatherWiz.ViewModels
         public UVViewModel()
 		{
 			Index = -1;
-			Task.Run(async () =>
-			{
-				var resp = await _uvService.GetCurrentUV(App.Coords.Item1.Value, App.Coords.Item2.Value);
-				Index = (int)resp.Result.Uv;
-                TimeSunRise = resp.Result.Sun_info.Sun_times.Sunrise.ToLocalTime().ToString("h:mm tt");
-                TimeSunSet = resp.Result.Sun_info.Sun_times.Sunset.ToLocalTime().ToString("h:mmtt");
-			});
+
+            var app = (App)Application.Current;
+            app.CurrentLocationUpdated += App_CurrentLocationUpdated;
 		} // End Constructor
-		private string ScaleSelection(int index)
+
+        private async void App_CurrentLocationUpdated(Util.CurrentLocation obj)
+        {
+			var resp = await _uvService.GetCurrentUV(obj.Coords.Item1.Value, obj.Coords.Item2.Value);
+			Index = (int)resp.Result.Uv;
+            TimeSunRise = resp.Result.Sun_info.Sun_times.Sunrise.ToLocalTime().ToString("h:mm tt");
+            TimeSunSet = resp.Result.Sun_info.Sun_times.Sunset.ToLocalTime().ToString("h:mmtt");
+        }
+
+        private string ScaleSelection(int index)
 		{
             foreach (var item in scale)
 				if (index <= item.Key) return item.Value;

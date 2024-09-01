@@ -16,11 +16,6 @@ namespace WeatherWiz
             {
                 Url = "index.html"
             };
-            Task.Run(async () => 
-            { 
-                var resp = await Helper.GetCurrentLocationAsync();
-                CityName = resp.LocationResult;
-            });
         } // End Constructor
         private async void PanGestureRecognizer_PanUpdated(object sender, PanUpdatedEventArgs e)
         {

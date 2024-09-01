@@ -32,7 +32,8 @@ namespace WeatherWiz.ViewModels
         private Tuple<double?, double?>? _coords;
         private ImageSource? _imageSource;
         private WeatherResumeResponse? _weatherDay;
-        private WeatherFiveDaysResponse? _weatherWeek;
+        private WeatherFiveDaysResponse? _weatherWeekHourly;
+        private List<WeatherDailySummary>? _weatherWeek;
         private int _temp;
         private string? _descr;
         private int _highTemp;
@@ -42,6 +43,7 @@ namespace WeatherWiz.ViewModels
         private double _windspeed;
         private double _winddeg;
         private double _rainfall;
+        private double _tomorrowRain;
 
         // Property
         public ObservableCollection<object> Forecasts { get; set; } = new();
@@ -54,9 +56,8 @@ namespace WeatherWiz.ViewModels
                 {
                     Task.Run(async () => 
                     {
-                        Time = await tzService.GetTimeOnly(App.Coords?.Item1, App.Coords?.Item2);
                         WeatherDay = await weatherService.GetTodayResume(value?.Split(",")[0] ?? "");
-                        WeatherWeek = await weatherService.GetFiveDays(value?.Split(",")[0] ?? "");
+                        WeatherWeekHourly = await weatherService.GetFiveDays(value?.Split(",")[0] ?? "");
                     });
                 }
             }
@@ -106,47 +107,30 @@ namespace WeatherWiz.ViewModels
                     WindSpeed = value?.Wind == null ? 0 : value.Wind.Speed;
                     WindDeg = value?.Wind == null ? 0 : value.Wind.Deg;
 
-                    Rainfall = value.Rain == null ? 0d : value.Rain.Hour ?? 0d;
+                    Rainfall = value?.Rain == null ? 0d : value.Rain.Hour ?? 0d;
                 } 
             }
         }
-        public WeatherFiveDaysResponse? WeatherWeek
+        public WeatherFiveDaysResponse? WeatherWeekHourly
+        {
+            get { return _weatherWeekHourly; }
+            set 
+            {
+                if (SetProperty(ref _weatherWeekHourly, value))
+                {
+                    PopulateForecasts(value ?? new());
+                    WeatherWeek = SummarizeByDay(value ?? new());
+                } 
+            }
+        }
+        public List<WeatherDailySummary>? WeatherWeek
         {
             get { return _weatherWeek; }
             set 
-            {
-                DateTime? previousDate = null;
-                if (SetProperty(ref _weatherWeek, value))
+            { 
+                if (SetProperty(ref _weatherWeek, value)) 
                 {
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-                    value.List.ForEach(el =>
-                    {
-#pragma warning disable CS8629 // Nullable value type may be null.
-                        DateTime currentDate = el.Dt_txt.Value.Date;
-#pragma warning restore CS8629 // Nullable value type may be null.
-
-                        if (previousDate.HasValue && previousDate.Value != currentDate) Forecasts.Add(new Separator());
-
-                        Forecasts.Add(new WeatherForecast()
-                        {
-                            Time = (DateTime)el.Dt_txt,
-                            TimeDisplay = el.Dt_txt.HasValue ? el.Dt_txt.Value.ToString("H tt") : "",
-                            Image = $"https://openweathermap.org/img/wn/{el.Weather?[0].Icon}@2x.png",
-                            Temperature = (int)el.Main.Temp
-                        });
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
-
-                        previousDate = currentDate;
-                    });
-
-                    DateTime currentTime = DateTime.Now;
-                    var weatherForecasts = Forecasts.OfType<WeatherForecast>();
-
-                    var closestForecast = weatherForecasts
-                                            .OrderBy(f => Math.Abs((f.Time - currentTime).Ticks)) 
-                                            .FirstOrDefault();
-
-                    if (closestForecast != null) closestForecast.TimeDisplay = "Now";
+                    TomorrowRain = Double.Round(value?[1].AvgRain ?? 0, 2);
                 } 
             }
         }
@@ -195,15 +179,20 @@ namespace WeatherWiz.ViewModels
             get { return _rainfall; }
             set { SetProperty(ref _rainfall, value); }
         }
+        public double TomorrowRain
+        {
+            get { return _tomorrowRain; }
+            set { SetProperty(ref _tomorrowRain, value); }
+        }
 
         // Method
         public MainPageViewModel()
         {
             Task.Run(async () => 
             {
-                Location = App.CityName;
                 await UpdateTimeAsync();
             });
+
             _webView = new();
 
             _timer = new( 60 * 60 * 1000); 
@@ -211,7 +200,15 @@ namespace WeatherWiz.ViewModels
             _timer.Start();
 
             TraslationY = 650;
-        }
+
+            var app = (App)Application.Current;
+            app.CurrentLocationUpdated += App_CurrentLocationUpdated;
+        } // End Constructor
+        private async void App_CurrentLocationUpdated(CurrentLocation obj)
+        {
+            Time = await tzService.GetTimeOnly(obj.Coords?.Item1, obj.Coords?.Item2);
+            Location = obj.LocationResult;
+        } // End App_LocationUpdated
         private async Task UpdateTimeAsync()
         {
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
@@ -255,5 +252,76 @@ namespace WeatherWiz.ViewModels
                     break;
             } // End Switch
         } // End PanUpdate
+        private void PopulateForecasts(WeatherFiveDaysResponse value)
+        {
+            DateTime? previousDate = null;
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+            value.List.ForEach(el =>
+            {
+#pragma warning disable CS8629 // Nullable value type may be null.
+                DateTime currentDate = el.Dt_txt.Value.Date;
+#pragma warning restore CS8629 // Nullable value type may be null.
+
+                if (previousDate.HasValue && previousDate.Value != currentDate) Forecasts.Add(new Separator());
+
+                Forecasts.Add(new WeatherForecast()
+                {
+                    Time = (DateTime)el.Dt_txt,
+                    TimeDisplay = el.Dt_txt.HasValue ? el.Dt_txt.Value.ToString("H tt") : "",
+                    Image = $"https://openweathermap.org/img/wn/{el.Weather?[0].Icon}@2x.png",
+                    Temperature = (int)el.Main.Temp
+                });
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+
+                previousDate = currentDate;
+            });
+
+            DateTime currentTime = DateTime.Now;
+            var weatherForecasts = Forecasts.OfType<WeatherForecast>();
+
+            var closestForecast = weatherForecasts
+                                    .OrderBy(f => Math.Abs((f.Time - currentTime).Ticks))
+                                    .FirstOrDefault();
+
+            if (closestForecast != null) closestForecast.TimeDisplay = "Now";
+        } // End PopulateForecasts
+        public List<WeatherDailySummary> SummarizeByDay(WeatherFiveDaysResponse value)
+        {
+            var dailyData = new Dictionary<string, List<WeatherDayResponse>>();
+
+            foreach (var entry in value?.List ?? new())
+            {
+                string date = entry.Dt_txt.HasValue ? entry.Dt_txt.Value.ToString("yyyy-MM-dd") : DateTime.Now.ToString("yyyy-MM-dd");
+
+                if (!dailyData.ContainsKey(date))
+                {
+                    dailyData[date] = new List<WeatherDayResponse>();
+                }
+
+                dailyData[date].Add(entry);
+            }
+
+            // Calcola la media per ogni giorno
+            var summarizedData = new List<WeatherDailySummary>();
+
+            foreach (var day in dailyData)
+            {
+                var entries = day.Value;
+                summarizedData.Add(new WeatherDailySummary
+                {
+                    AvgTemp = entries.Average(e => e.Main?.Temp ?? 0),
+                    AvgFeelsLike = entries.Average(e => e.Main?.Feels_like ?? 0),
+                    AvgHumidity = entries.Average(e => e.Main?.Humidity ?? 0),
+                    AvgPressure = entries.Average(e => e.Main?.Pressure ?? 0),
+                    AvgRain = entries.Average(e => e.Rain?.ThreeHours ?? 0),
+                    WeatherDescription = entries.GroupBy(e => e.Weather?[0].Description)
+                                                .OrderByDescending(g => g.Count())
+                                                .First().Key,
+                    Date = DateTime.Parse(day.Key)
+                });
+            }
+
+            return summarizedData;
+        }
     } // End LocationViewModel
 }

@@ -118,12 +118,13 @@ namespace WeatherWiz.ViewModels
         // Method
         public AirPollutionViewModel() 
 		{
-            Task.Run(async () =>
-            {
-                AQIState = await weatherService.GetAirPollution(App.Coords.Item1.Value, App.Coords.Item2.Value);
-            });
-
+            var app = (App)Application.Current;
+            app.CurrentLocationUpdated += App_CurrentLocationUpdated;
         } // End Constructor
+        private async void App_CurrentLocationUpdated(CurrentLocation obj)
+        {
+            AQIState = await weatherService.GetAirPollution(obj.Coords.Item1.Value, obj.Coords.Item2.Value);
+        } // End App_CurrentLocationUpdated
         public int CalculateOverallAQI(Dictionary<string, double> components)
         {
             var aqiValues = new List<int>();
