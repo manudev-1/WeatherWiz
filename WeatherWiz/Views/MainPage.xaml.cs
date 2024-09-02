@@ -26,5 +26,13 @@ namespace WeatherWiz
         {
             await Launcher.OpenAsync($"https://www.meteoblue.com/en/weather/outdoorsports/airquality/{CityName}");
         } // End TapGestureRecognizer_Tapped
+        private void TapGestureRecognizer_Tapped_1(object sender, TappedEventArgs e)
+        {
+
+        } // End TapGestureRecognizer_Tapped_1
+        private void TapGestureRecognizer_Tapped_2(object sender, TappedEventArgs e)
+        {
+
+        } // End TapGestureRecognizer_Tapped_2
     } // End class
 } // End namespace

@@ -142,18 +142,48 @@
                 <ScrollView VerticalOptions="FillAndExpand"
                             Orientation="Vertical">
                     <VerticalStackLayout>
-                        <StackLayout HorizontalOptions="CenterAndExpand"
-                                     Spacing="25"
-                                     Orientation="Horizontal">
+                        <Grid HorizontalOptions="CenterAndExpand"
+                              ColumnSpacing="25">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="50*" />
+                                <ColumnDefinition Width="50*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
                             <Label Text="Hourly Forecast"
                                    FontFamily="MontSerratSemibold"
                                    TextColor="#EBEBF5" 
-                                   Opacity="0.6"/>
+                                   Opacity="0.6"
+                                   Grid.Column="0"
+                                   Grid.Row="0">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped_1"/>
+                                </Label.GestureRecognizers>
+                            </Label>
                             <Label Text="Weekly Forecast"
                                    FontFamily="MontSerratSemibold"
                                    TextColor="#EBEBF5"
-                                   Opacity="0.6"/>
-                        </StackLayout>
+                                   Opacity="0.6"
+                                   Grid.Column="1"
+                                   Grid.Row="0"/>
+                            <BoxView IsVisible="{Binding Opened}"
+                                     HeightRequest="1" 
+                                     HorizontalOptions="FillAndExpand"
+                                     VerticalOptions="Center"
+                                     Margin="10"
+                                     Grid.Row="1">
+                                <BoxView.Background>
+                                    <RadialGradientBrush>
+                                        <GradientStop Color="#fff" 
+                                                      Offset="0.1" />
+                                        <GradientStop Color="#00000000" 
+                                                      Offset="1.0" />
+                                    </RadialGradientBrush>
+                                </BoxView.Background>
+                            </BoxView>
+                        </Grid>
                         
                         <CollectionView ItemsSource="{Binding Forecasts}"
                                         Margin="0, 20">
@@ -217,23 +247,18 @@
                                                   Title="UV Index"
                                                   ImageSource="&#xe518;">
                                     <component:Widget.XAMLChildren>
-                                        <StackLayout HeightRequest="125">
+                                        <StackLayout HeightRequest="125"
+                                                     Spacing="30">
                                             <StackLayout.BindingContext>
                                                 <vm:UVViewModel />
                                             </StackLayout.BindingContext>
-                                            <StackLayout Padding="0, 10"
-                                                         VerticalOptions="FillAndExpand">
-                                                <StackLayout VerticalOptions="EndAndExpand">
-                                                    <Label Text="{Binding Index}"
-                                                           FontFamily="MontSerratSemibold"
-                                                           FontSize="24"
-                                                           VerticalOptions="End"/>
-                                                    <Label Text="{Binding Description}"
-                                                           FontFamily="MontSerratSemibold"
-                                                           VerticalOptions="End"/>
-                                                </StackLayout>
+                                            <StackLayout>
+                                                <Label Text="{Binding Index}"
+                                                            FontFamily="MontSerratSemibold"
+                                                            FontSize="24"/>
+                                                <Label Text="{Binding Description}"
+                                                               FontFamily="MontSerrat"/>
                                             </StackLayout>
-
                                             <component:ProgressBar Progress="{Binding Progress}"/>
                                         </StackLayout>
                                     </component:Widget.XAMLChildren>
@@ -242,16 +267,14 @@
                                                   Title="Sunrise"
                                                   ImageSource="&#xe1c6;">
                                     <component:Widget.XAMLChildren>
-                                        <StackLayout HeightRequest="125">
+                                        <StackLayout HeightRequest="125"
+                                                     Spacing="55">
                                             <StackLayout.BindingContext>
                                                 <vm:UVViewModel />
                                             </StackLayout.BindingContext>
                                             <Label Text="{Binding TimeSunRise}"
                                                    FontSize="32"
                                                    FontFamily="MontSerratSemibold"/>
-
-                                            
-
                                             <Label Text="{Binding TimeSunSet, StringFormat='Sunset: {0}'}"
                                                    FontFamily="MontSerrat"/>
                                         </StackLayout>
@@ -297,7 +320,7 @@
                                                   ImageSource="&#xe798;">
                                     <component:Widget.XAMLChildren>
                                         <StackLayout HeightRequest="125"
-                                                     Spacing="20">
+                                                     Spacing="25">
                                             <StackLayout.BindingContext>
                                                 <vm:MainPageViewModel />
                                             </StackLayout.BindingContext>
@@ -322,6 +345,98 @@
                                                     </FormattedString>
                                                 </Label.FormattedText>
                                             </Label>
+                                        </StackLayout>
+                                    </component:Widget.XAMLChildren>
+                                </component:Widget>
+                            </Grid>
+
+                            <Grid ColumnSpacing="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="50*"/>
+                                    <ColumnDefinition Width="50*"/>
+                                </Grid.ColumnDefinitions>
+                                <component:Widget Grid.Column="0" 
+                                                  Title="Feels Like"
+                                                  ImageSource="&#xe1ff;">
+                                    <component:Widget.XAMLChildren>
+                                        <StackLayout HeightRequest="125"
+                                                     Spacing="55">
+                                            <StackLayout.BindingContext>
+                                                <vm:MainPageViewModel />
+                                            </StackLayout.BindingContext>
+                                            <Label Text="{Binding FeelsLike, StringFormat='{0}°'}"
+                                                   FontFamily="MontSerratSemibold"
+                                                   FontSize="24"/>
+                                            <Label Text="{Binding FeelPunchLine}"
+                                                   FontFamily="MontSerrat"/>
+                                        </StackLayout>
+                                    </component:Widget.XAMLChildren>
+                                </component:Widget>
+                                <component:Widget Grid.Column="1" 
+                                                  Title="Humidity"
+                                                  ImageSource="&#xf879;">
+                                    <component:Widget.XAMLChildren>
+                                        <StackLayout HeightRequest="125"
+                                                     Spacing="55">
+                                            <StackLayout.BindingContext>
+                                                <vm:MainPageViewModel />
+                                            </StackLayout.BindingContext>
+                                            <Label Text="{Binding Humidity, StringFormat='{0}%'}"
+                                                   FontSize="24" 
+                                                   FontFamily="MontSerratSemibold"/>
+                                            <Label>
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                        <Span Text="The dew point is "
+                                                              FontFamily="MontSerrat"/>
+                                                        <Span Text="{Binding DewPoint}" 
+                                                              FontFamily="MontSerrat"/>
+                                                        <Span Text=" right now."
+                                                              FontFamily="MontSerrat"/>
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+                                        </StackLayout>
+                                    </component:Widget.XAMLChildren>
+                                </component:Widget>
+                            </Grid>
+
+                            <Grid ColumnSpacing="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="50*"/>
+                                    <ColumnDefinition Width="50*"/>
+                                </Grid.ColumnDefinitions>
+                                <component:Widget Grid.Column="0" 
+                                          Title="Visibility"
+                                          ImageSource="&#xe8f4;">
+                                    <component:Widget.XAMLChildren>
+                                        <StackLayout HeightRequest="125"
+                                                     Spacing="75">
+                                            <StackLayout.BindingContext>
+                                                <vm:MainPageViewModel />
+                                            </StackLayout.BindingContext>
+                                            <Label Text="{Binding Visibility, StringFormat='{0}km'}"
+                                                   FontFamily="MontSerratSemibold"
+                                                   FontSize="24"/>
+                                            <Label Text="{Binding VisibilityLine}"
+                                                   FontFamily="MontSerrat"/>
+                                        </StackLayout>
+                                    </component:Widget.XAMLChildren>
+                                </component:Widget>
+                                <component:Widget Grid.Column="1" 
+                                                  Title="Pressure"
+                                                  ImageSource="&#xe9e4;">
+                                    <component:Widget.XAMLChildren>
+                                        <StackLayout HeightRequest="125"
+                                                     Spacing="55">
+                                            <StackLayout.BindingContext>
+                                                <vm:MainPageViewModel />
+                                            </StackLayout.BindingContext>
+                                            <Label Text="{Binding Pressure, StringFormat='{0}hPA'}"
+                                                   FontSize="24" 
+                                                   FontFamily="MontSerratSemibold"/>
+                                            <Label Text="{Binding PressureLine}"
+                                                   FontFamily="MontSerrat"/>
                                         </StackLayout>
                                     </component:Widget.XAMLChildren>
                                 </component:Widget>

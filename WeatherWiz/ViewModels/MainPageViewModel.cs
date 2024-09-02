@@ -44,6 +44,14 @@ namespace WeatherWiz.ViewModels
         private double _winddeg;
         private double _rainfall;
         private double _tomorrowRain;
+        private int _feelsLike;
+        private string? _feelPunchLine;
+        private int _humidity;
+        private int _dewPoint;
+        private int _visibility;
+        private string? _visibilityLine;
+        private int _pressure;
+        private string? _pressureLine;
 
         // Property
         public ObservableCollection<object> Forecasts { get; set; } = new();
@@ -108,6 +116,14 @@ namespace WeatherWiz.ViewModels
                     WindDeg = value?.Wind == null ? 0 : value.Wind.Deg;
 
                     Rainfall = value?.Rain == null ? 0d : value.Rain.Hour ?? 0d;
+
+                    FeelsLike = value == null ? 0 : (int)value.Main.Feels_like;
+
+                    Humidity = value == null ? 0 : value.Main.Humidity;
+
+                    Visibility = MeterToKilometer(value?.Visibility ?? 0);
+
+                    Pressure = value == null ? 0 : value.Main.Pressure;
                 } 
             }
         }
@@ -183,6 +199,70 @@ namespace WeatherWiz.ViewModels
         {
             get { return _tomorrowRain; }
             set { SetProperty(ref _tomorrowRain, value); }
+        }
+        public int FeelsLike
+        {
+            get { return _feelsLike; }
+            set 
+            { 
+                if (SetProperty(ref _feelsLike, value)) 
+                {
+                    FeelPunchLine = GetPerceivedTemperatureDescription(value, Temp);
+                } 
+            }
+        }
+        public string? FeelPunchLine
+        {
+            get { return _feelPunchLine; }
+            set { SetProperty(ref _feelPunchLine, value); }
+        }
+        public int Humidity
+        {
+            get { return _humidity; }
+            set 
+            { 
+                if(SetProperty(ref _humidity, value))
+                {
+                    DewPoint = (int)CalculateDewPoint(Temp, value);
+                }
+            }
+        }
+        public int DewPoint
+        {
+            get { return _dewPoint; }
+            set { SetProperty(ref _dewPoint, value); }
+        }
+        public int Visibility
+        {
+            get { return _visibility; }
+            set 
+            { 
+                if(SetProperty(ref _visibility, value))
+                {
+                    VisibilityLine = GetVisibilityDescription(value);
+                }
+            }
+        }
+        public string? VisibilityLine
+        {
+            get { return _visibilityLine; }
+            set { SetProperty(ref _visibilityLine, value); }
+        }
+        public int Pressure
+        {
+            get { return _pressure; }
+            set 
+            { 
+                if(SetProperty(ref _pressure, value))
+                {
+                    PressureLine = GetPressureDescription(value);
+                }
+            }
+        }
+        public string? PressureLine
+        {
+            get { return _pressureLine; }
+            set { SetProperty(ref _pressureLine, value); }
         }
 
         // Method
@@ -322,6 +402,48 @@ namespace WeatherWiz.ViewModels
             }
 
             return summarizedData;
+        }
+        private string GetPerceivedTemperatureDescription(double perceivedTemperature, double actualTemperature)
+        {
+            double difference = perceivedTemperature - actualTemperature;
+
+            if (Math.Abs(difference) < 1) return "Temperature is almost the same.";
+            else if (difference > 0 && difference <= 3) return "Slightly warmer than expected.";
+            else if (difference > 3) return "Significantly warmer than expected.";
+            else if (difference < 0 && difference >= -3) return "Slightly cooler than expected.";
+            return "Significantly cooler than expected.";
+        } // End GetPerceivedTemperatureDescription
+        private double CalculateDewPoint(double temperature, double humidity)
+        {
+            double a = 17.27;
+            double b = 237.7;
+
+            double alpha = ((a * temperature) / (b + temperature)) + Math.Log(humidity / 100.0);
+            double dewPoint = (b * alpha) / (a - alpha);
+
+            return dewPoint;
+        } // End CalculateDewPoint
+        private int MeterToKilometer(int value)
+        {
+            return value / 1000;
+        } // End MeterToKilometer
+        private string GetVisibilityDescription(double visibilityInKm)
+        {
+            if (visibilityInKm >= 10) return "Clear visibility.";
+            else if (visibilityInKm >= 5 && visibilityInKm < 10) return "Good visibility.";
+            else if (visibilityInKm >= 1 && visibilityInKm < 5) return "Moderate visibility.";
+            else if (visibilityInKm >= 0.5 && visibilityInKm < 1) return "Poor visibility.";
+            return "Very poor visibility.";
+        } // End GetVisibilityDescription
+        private string GetPressureDescription(double pressureInHpa)
+        {
+            if (pressureInHpa > 1020)
+                return "High pressure, clear skies.";
+            else if (pressureInHpa >= 1000 && pressureInHpa <= 1020)
+                return "Stable pressure, typical conditions.";
+            else if (pressureInHpa < 1000)
+                return "Low pressure, possible storms.";
+            return "";
         }
     } // End LocationViewModel
 }
