@@ -41,6 +41,26 @@
                     </Border.StrokeShape>
                 </Border>
             </DataTemplate>
+            <DataTemplate x:Key="WeekForecastTemplate">
+                <Border WidthRequest="60"
+                        StrokeThickness="0.5"
+                        BackgroundColor="{Binding TimeLabelColor}">
+                    <StackLayout Orientation="Vertical"
+                                 Padding="10">
+                        <Label Text="{Binding TimeDisplay}" 
+                               FontSize="11" 
+                               FontFamily="MontSerratSemibold"
+                               HorizontalOptions="Center"/>
+                        <Image Source="{Binding Icon}"/>
+                        <Label Text="{Binding AvgTemp, StringFormat='{0}°'}" 
+                               FontSize="16"
+                               HorizontalOptions="Center"/>
+                    </StackLayout>
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="40" />
+                    </Border.StrokeShape>
+                </Border>
+            </DataTemplate>
         </ResourceDictionary>
     </ContentPage.Resources>
     <Grid>
@@ -167,12 +187,17 @@
                                    TextColor="#EBEBF5"
                                    Opacity="0.6"
                                    Grid.Column="1"
-                                   Grid.Row="0"/>
-                            <BoxView IsVisible="{Binding Opened}"
+                                   Grid.Row="0">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped_2"/>
+                                </Label.GestureRecognizers>
+                            </Label>
+                            <BoxView x:Name="underLine"
                                      HeightRequest="1" 
                                      HorizontalOptions="FillAndExpand"
                                      VerticalOptions="Center"
                                      Margin="10"
+                                     Grid.Column="0"
                                      Grid.Row="1">
                                 <BoxView.Background>
                                     <RadialGradientBrush>
@@ -184,8 +209,9 @@
                                 </BoxView.Background>
                             </BoxView>
                         </Grid>
-                        
-                        <CollectionView ItemsSource="{Binding Forecasts}"
+
+                        <CollectionView x:Name="collectionView"
+                                        ItemsSource="{Binding Forecasts}"
                                         Margin="0, 20">
                             <CollectionView.ItemsLayout>
                                 <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10"/>
@@ -193,7 +219,8 @@
                             <CollectionView.ItemTemplate>
                                 <m:ForecastTemplateSelector 
                                     ForecastTemplate="{StaticResource ForecastTemplate}"
-                                    SeparatorTemplate="{StaticResource SeparatorTemplate}"/>
+                                    SeparatorTemplate="{StaticResource SeparatorTemplate}"
+                                    WeekForecastTemplate="{StaticResource WeekForecastTemplate}"/>
                             </CollectionView.ItemTemplate>
                         </CollectionView>
                         

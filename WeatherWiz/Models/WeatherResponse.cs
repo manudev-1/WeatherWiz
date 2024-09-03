@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -174,12 +175,31 @@ namespace WeatherWiz.Models
 
     public class WeatherDailySummary
     {
-        public double AvgTemp { get; set; }
+        public int AvgTemp { get; set; }
         public double AvgFeelsLike { get; set; }
         public double AvgHumidity { get; set; }
         public double AvgPressure { get; set; }
         public double AvgRain { get; set; }
         public string? WeatherDescription { get; set; }
+        public string? Icon { get; set; }
         public DateTime Date { get; set; }
+        public Color? TimeLabelColor
+        {
+            get
+            {
+                if (DateTime.Today.Date == Date.Date) return Color.FromArgb("48319D");
+                return Color.FromArgb("00000000");
+            }
+        }
+        public string? TimeDisplay
+        {
+            get
+            {
+                CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;
+                TextInfo textInfo = cultureInfo.TextInfo;
+
+                return textInfo.ToTitleCase(Date.ToString("ddd"));
+            }
+        }
     }
 } // End Namespace

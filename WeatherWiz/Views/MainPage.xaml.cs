@@ -9,6 +9,7 @@ namespace WeatherWiz
     public partial class MainPage : ContentPage
     {
         public string? CityName { get; set; }
+        public MainPageViewModel binding { get; set; }
         public MainPage()
         {
             InitializeComponent();
@@ -16,6 +17,7 @@ namespace WeatherWiz
             {
                 Url = "index.html"
             };
+            
         } // End Constructor
         private async void PanGestureRecognizer_PanUpdated(object sender, PanUpdatedEventArgs e)
         {
@@ -28,11 +30,21 @@ namespace WeatherWiz
         } // End TapGestureRecognizer_Tapped
         private void TapGestureRecognizer_Tapped_1(object sender, TappedEventArgs e)
         {
-
+            binding = this.BindingContext as MainPageViewModel ?? new();
+            if (collectionView.ItemsSource != binding.Forecasts)
+            {
+                collectionView.ItemsSource = binding.Forecasts;
+                Grid.SetColumn(underLine, 0);
+            }
         } // End TapGestureRecognizer_Tapped_1
         private void TapGestureRecognizer_Tapped_2(object sender, TappedEventArgs e)
         {
-
+            binding = this.BindingContext as MainPageViewModel ?? new();
+            if (collectionView.ItemsSource != binding.WeatherWeek)
+            {
+                collectionView.ItemsSource = binding.WeatherWeek;
+                Grid.SetColumn(underLine, 1);
+            }
         } // End TapGestureRecognizer_Tapped_2
     } // End class
 } // End namespace

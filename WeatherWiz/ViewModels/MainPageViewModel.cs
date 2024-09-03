@@ -29,11 +29,10 @@ namespace WeatherWiz.ViewModels
 
         private string? _location;
         private TimeOnly? _time; 
-        private Tuple<double?, double?>? _coords;
         private ImageSource? _imageSource;
         private WeatherResumeResponse? _weatherDay;
         private WeatherFiveDaysResponse? _weatherWeekHourly;
-        private List<WeatherDailySummary>? _weatherWeek;
+        private ObservableCollection<WeatherDailySummary>? _weatherWeek;
         private int _temp;
         private string? _descr;
         private int _highTemp;
@@ -139,7 +138,7 @@ namespace WeatherWiz.ViewModels
                 } 
             }
         }
-        public List<WeatherDailySummary>? WeatherWeek
+        public ObservableCollection<WeatherDailySummary>? WeatherWeek
         {
             get { return _weatherWeek; }
             set 
@@ -365,7 +364,7 @@ namespace WeatherWiz.ViewModels
 
             if (closestForecast != null) closestForecast.TimeDisplay = "Now";
         } // End PopulateForecasts
-        public List<WeatherDailySummary> SummarizeByDay(WeatherFiveDaysResponse value)
+        public ObservableCollection<WeatherDailySummary> SummarizeByDay(WeatherFiveDaysResponse value)
         {
             var dailyData = new Dictionary<string, List<WeatherDayResponse>>();
 
@@ -389,7 +388,7 @@ namespace WeatherWiz.ViewModels
                 var entries = day.Value;
                 summarizedData.Add(new WeatherDailySummary
                 {
-                    AvgTemp = entries.Average(e => e.Main?.Temp ?? 0),
+                    AvgTemp = (int)entries.Average(e => e.Main?.Temp ?? 0),
                     AvgFeelsLike = entries.Average(e => e.Main?.Feels_like ?? 0),
                     AvgHumidity = entries.Average(e => e.Main?.Humidity ?? 0),
                     AvgPressure = entries.Average(e => e.Main?.Pressure ?? 0),
@@ -397,11 +396,14 @@ namespace WeatherWiz.ViewModels
                     WeatherDescription = entries.GroupBy(e => e.Weather?[0].Description)
                                                 .OrderByDescending(g => g.Count())
                                                 .First().Key,
+                    Icon = $"https://openweathermap.org/img/wn/{entries.GroupBy(e => e.Weather?[0].Icon)
+                                                                       .OrderByDescending(g => g.Count())
+                                                                       .First().Key}@2x.png",
                     Date = DateTime.Parse(day.Key)
                 });
             }
 
-            return summarizedData;
+            return new(summarizedData);
         }
         private string GetPerceivedTemperatureDescription(double perceivedTemperature, double actualTemperature)
         {
