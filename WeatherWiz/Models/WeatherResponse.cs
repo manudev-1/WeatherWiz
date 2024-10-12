@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +22,7 @@ namespace WeatherWiz.Models
         public List<WeatherDaySpecResponse>? Weather { get; set; }
         public WeatherDayCloudResponse? Clouds { get; set; }
         public WeatherDayWindResponse? Wind { get; set; }
+        public WeatherDayRainResponse? Rain { get; set; }
         public int Visibility { get; set; }
         public double Pop { get; set; }
         public WeatherDaySysResponse? Sys { get; set; }
@@ -44,17 +46,22 @@ namespace WeatherWiz.Models
         public int Id { get; set; }
         public string? Main { get; set; }
         public string? Description { get; set; }
-        public string Icon { get; set; }
+        public string? Icon { get; set; }
     } // End WeatherDaySpecResponse
     public class WeatherDayCloudResponse
     {
         public int All { get; set; }
     } // End WeatherDayCloudResponse
-    public class WeatherDayWindResponse 
+    public class WeatherDayWindResponse
     {
         public double Speed { get; set; }
         public int Deg { get; set; }
         public double gust { get; set; }
+    } // End WeatherDayWindResponse
+    public class WeatherDayRainResponse
+    {
+        [JsonProperty("3h")]
+        public double ThreeHours { get; set; }
     } // End WeatherDayWindResponse
     public class WeatherDaySysResponse
     {
@@ -69,6 +76,7 @@ namespace WeatherWiz.Models
         public WeatherResumeMainResponse? Main { get; set; }
         public int Visibility { get; set; }
         public WeatherResumeWindResponse? Wind { get; set; }
+        public WeatherResumeRainResponse? Rain { get; set; }
         public WeatherDayCloudResponse? Cloud { get; set; }
         public int dt { get; set; }
         public WeatherResumeSysResponse? Sys { get; set; }
@@ -76,7 +84,7 @@ namespace WeatherWiz.Models
         public int Id { get; set; }
         public string? Name { get; set; }
         public int Cod { get; set; }
-    }
+    } // End WeatherResumeResponse
     public class WeatherResumeCoordResponse
     {
         public double Lon { get; set; }
@@ -104,7 +112,13 @@ namespace WeatherWiz.Models
     {
         public double Speed { get; set; }
         public int Deg { get; set; }
+        public double? Gust { get; set; }
     } // End WeatherResumeWindResponse
+    public class WeatherResumeRainResponse
+    {
+        [JsonProperty("1h")]
+        public double? Hour { get; set; }
+    }
     public class WeatherResumeSysResponse
     {
         public int Type { get; set; }
@@ -114,5 +128,75 @@ namespace WeatherWiz.Models
         public int Sunset { get; set; }
     } // End WeatherResumeSysResponse
 
+    public class WeatherAirPollutionResponse : ObjectLog
+    {
+        public WeatherResumeCoordResponse? Coord { get; set; }
+        public List<WeatherAirDataResponse>? List { get; set; }
 
+    } // End WeatherAirPollutionResponse
+    public class WeatherAirDataResponse
+    {
+        public WeatherAirDataMainResponse? Main { get; set; }
+        public WeatherAirDataCompResponse? Components { get; set; }
+        public int Dt { get; set; }
+    } // End WeatherAirDataResponse
+    public class WeatherAirDataMainResponse
+    {
+        public int Aqi { get; set; }
+    } // End WeatherAirDataMainResponse
+    public class WeatherAirDataCompResponse
+    {
+        public double Co { get; set; }
+        public double No { get; set; }
+        public double No2 { get; set; }
+        public double O3 { get; set; }
+        public double So3 { get; set; }
+        public double Pm2_5 { get; set; }
+        public double Pm10 { get; set; }
+        public double Nh3 { get; set; }
+    } // End WeatherAirDataCompResponse
+
+    public class WeatherForecast
+    {
+        public DateTime Time { get; set; }
+        public string? TimeDisplay { get; set; } = string.Empty;
+        public ImageSource? Image { get; set; }
+        public int Temperature { get; set; }
+        public Color? TimeLabelColor
+        {
+            get
+            {
+                if (TimeDisplay == "Now")
+                    return Color.FromArgb("48319D");
+                else return Color.FromArgb("00000000");
+            }
+        }
+    } // End WeatherForecast
+
+    public class WeatherDailySummary
+    {
+        public int AvgTemp { get; set; }
+        public double AvgFeelsLike { get; set; }
+        public double AvgHumidity { get; set; }
+        public double AvgPressure { get; set; }
+        public double AvgRain { get; set; }
+        public string? WeatherDescription { get; set; }
+        public string? Icon { get; set; }
+        public DateTime Date { get; set; }
+        public Color? TimeLabelColor
+        {
+            get
+            {
+                if (DateTime.Today.Date == Date.Date) return Color.FromArgb("48319D");
+                return Color.FromArgb("00000000");
+            }
+        }
+        public string? TimeDisplay
+        {
+            get
+            {
+                return Date.ToString("ddd", new CultureInfo("en-US"));
+            }
+        }
+    }
 } // End Namespace

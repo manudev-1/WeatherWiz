@@ -2,14 +2,70 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:WeatherWiz.ViewModels"
+             xmlns:m="clr-namespace:WeatherWiz.Models"
+             xmlns:component="clr-namespace:WeatherWiz.Components"
              x:Class="WeatherWiz.MainPage"
              Shell.NavBarIsVisible="False">
     <ContentPage.BindingContext>
         <vm:MainPageViewModel />
     </ContentPage.BindingContext>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <DataTemplate x:Key="SeparatorTemplate">
+                <BoxView HeightRequest="100" WidthRequest="1" VerticalOptions="FillAndExpand">
+                    <BoxView.Background>
+                        <RadialGradientBrush>
+                            <GradientStop Color="#fff" Offset="0.1" />
+                            <GradientStop Color="Transparent" Offset="1.0" />
+                        </RadialGradientBrush>
+                    </BoxView.Background>
+                </BoxView>
+            </DataTemplate>
+            <DataTemplate x:Key="ForecastTemplate">
+                <Border WidthRequest="60"
+            StrokeThickness="0.5"
+            BackgroundColor="{Binding TimeLabelColor}">
+                    <StackLayout Orientation="Vertical"
+                     Padding="10">
+                        <Label Text="{Binding TimeDisplay}" 
+                   FontSize="11" 
+                   FontFamily="MontSerratSemibold"
+                   HorizontalOptions="Center"/>
+                        <Image Source="{Binding Image}"/>
+                        <Label Text="{Binding Temperature, StringFormat='{0}°'}" 
+                   FontSize="16"
+                   HorizontalOptions="Center"/>
+                    </StackLayout>
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="40" />
+                    </Border.StrokeShape>
+                </Border>
+            </DataTemplate>
+            <DataTemplate x:Key="WeekForecastTemplate">
+                <Border WidthRequest="60"
+                        StrokeThickness="0.5"
+                        BackgroundColor="{Binding TimeLabelColor}">
+                    <StackLayout Orientation="Vertical"
+                                 Padding="10">
+                        <Label Text="{Binding TimeDisplay}" 
+                               FontSize="11" 
+                               FontFamily="MontSerratSemibold"
+                               HorizontalOptions="Center"/>
+                        <Image Source="{Binding Icon}"/>
+                        <Label Text="{Binding AvgTemp, StringFormat='{0}°'}" 
+                               FontSize="16"
+                               HorizontalOptions="Center"/>
+                    </StackLayout>
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="40" />
+                    </Border.StrokeShape>
+                </Border>
+            </DataTemplate>
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <Grid>
         <Image x:Name="bgImage" 
-               Source="{Binding ImageSource}" 
+               Source="{Binding TimeViewModel.ImageSource}" 
                Aspect="AspectFill"/>
         <Grid>
             <Grid.RowDefinitions>
@@ -20,17 +76,17 @@
                          HorizontalOptions="Center" 
                          VerticalOptions="Center"
                          Margin="25">
-                
+
                 <Label Text="{Binding Location}" 
                        FontSize="23" 
                        FontFamily="MontSerrat"/>
-                
-                <Label Text="{Binding Temp, StringFormat='{0}°C'}"
+
+                <Label Text="{Binding WeatherViewModel.Temp, StringFormat='{0}°'}"
                        FontSize="48" 
                        FontFamily="MontSerratThin"
                        HorizontalOptions="Center"/>
 
-                <Label Text="{Binding Description, StringFormat='{0}'}"
+                <Label Text="{Binding WeatherViewModel.Description, StringFormat='{0}'}"
                        FontSize="16" 
                        FontFamily="MontSerratSemibold"
                        TextColor="#EBEBF5"
@@ -38,28 +94,385 @@
                        HorizontalOptions="Center"/>
 
                 <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Spacing="10">
-                    <Label Text="{Binding HigherTemp, StringFormat='H:{0}°'}"
+                    <Label Text="{Binding WeatherViewModel.HigherTemp, StringFormat='H:{0}°'}"
                            FontSize="16" 
                            FontFamily="MontSerratSemibold"
                            HorizontalOptions="Center"/>
 
-                    <Label Text="{Binding LowerTemp, StringFormat='L:{0}°'}"
+                    <Label Text="{Binding WeatherViewModel.LowerTemp, StringFormat='L:{0}°'}"
                            FontSize="16" 
                            FontFamily="MontSerratSemibold"
                            HorizontalOptions="Center"/>
                 </StackLayout>
-                
+
             </StackLayout>
             <WebView x:Name="webView"
                  Grid.Row="1"
                  BackgroundColor="transparent"/>
         </Grid>
-        <Border TranslationY="{Binding TraslationY}" 
-                Stroke="White">
+        <Border Stroke="White"
+                x:Name="slider"
+                TranslationY="{Binding UIStateViewModel.TranslationY}"
+                Padding="20">
+            <StackLayout>
+                <StackLayout IsVisible="{Binding UIStateViewModel.Opened}"
+                             Margin="0, 30, 0, 0">
+                    <Label Text="{Binding Location}"
+                           HorizontalOptions="Center"
+                           FontSize="23" 
+                           FontFamily="MontSerrat"/>
+                    <StackLayout Orientation="Horizontal" 
+                             HorizontalOptions="Center">
+                        <Label Text="{Binding WeatherViewModel.Temp, StringFormat='{0}°|'}"
+                           FontSize="16"
+                           FontFamily="MontSerratSemibold"
+                           TextColor="#EBEBF5" 
+                           Opacity="0.6"
+                           HorizontalOptions="Center"/>
+                        <Label Text="{Binding WeatherViewModel.Description, StringFormat='{0}'}"
+                           FontSize="16"
+                           FontFamily="MontSerratSemibold"
+                           TextColor="#EBEBF5"
+                           Opacity="0.6"
+                           HorizontalOptions="Center"/>
+                    </StackLayout>
+                </StackLayout>
+                <BoxView IsVisible="{Binding UIStateViewModel.Opened}"
+                         HeightRequest="1" 
+                         HorizontalOptions="FillAndExpand"
+                         VerticalOptions="Center"
+                         Margin="10">
+                    <BoxView.Background>
+                        <RadialGradientBrush>
+                            <GradientStop Color="#fff"
+                          Offset="0.1" />
+                            <GradientStop Color="#00000000"
+                          Offset="1.0" />
+                        </RadialGradientBrush>
+                    </BoxView.Background>
+                </BoxView>
+                <Rectangle WidthRequest="48" 
+                           HeightRequest="5"
+                           BackgroundColor="#000"
+                           Opacity="0.3"
+                           HorizontalOptions="Center"
+                           Margin="10"
+                           RadiusX="50"
+                           RadiusY="50"/>
+                <ScrollView VerticalOptions="FillAndExpand"
+                            Orientation="Vertical">
+                    <VerticalStackLayout>
+                        <Grid HorizontalOptions="CenterAndExpand"
+                              ColumnSpacing="25">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="50*" />
+                                <ColumnDefinition Width="50*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+                            <Label Text="Hourly Forecast"
+                                   FontFamily="MontSerratSemibold"
+                                   TextColor="#EBEBF5" 
+                                   Opacity="0.6"
+                                   Grid.Column="0"
+                                   Grid.Row="0">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped_1"/>
+                                </Label.GestureRecognizers>
+                            </Label>
+                            <Label Text="Weekly Forecast"
+                                   FontFamily="MontSerratSemibold"
+                                   TextColor="#EBEBF5"
+                                   Opacity="0.6"
+                                   Grid.Column="1"
+                                   Grid.Row="0">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped_2"/>
+                                </Label.GestureRecognizers>
+                            </Label>
+                            <BoxView x:Name="underLine"
+                                     HeightRequest="1" 
+                                     HorizontalOptions="FillAndExpand"
+                                     VerticalOptions="Center"
+                                     Margin="10"
+                                     Grid.Column="0"
+                                     Grid.Row="1">
+                                <BoxView.Background>
+                                    <RadialGradientBrush>
+                                        <GradientStop Color="#fff" 
+                                                      Offset="0.1" />
+                                        <GradientStop Color="#00000000" 
+                                                      Offset="1.0" />
+                                    </RadialGradientBrush>
+                                </BoxView.Background>
+                            </BoxView>
+                        </Grid>
 
-            <Border.StrokeShape>
-                <RoundRectangle CornerRadius="40" />
-            </Border.StrokeShape>
+                        <CollectionView x:Name="collectionView"
+                                        ItemsSource="{Binding WeatherViewModel.Forecasts}"
+                                        Margin="0, 20">
+                            <CollectionView.ItemsLayout>
+                                <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10"/>
+                            </CollectionView.ItemsLayout>
+                            <CollectionView.ItemTemplate>
+                                <m:ForecastTemplateSelector 
+                                    ForecastTemplate="{StaticResource ForecastTemplate}"
+                                    SeparatorTemplate="{StaticResource SeparatorTemplate}"
+                                    WeekForecastTemplate="{StaticResource WeekForecastTemplate}"/>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                        
+                        <StackLayout Spacing="10">
+                            <component:Widget ImageSource="&#xe3a5;" Title="Air Pollution">
+                                <component:Widget.XAMLChildren>
+                                    <StackLayout Padding="10">
+                                        <StackLayout.BindingContext>
+                                            <vm:AirPollutionViewModel />
+                                        </StackLayout.BindingContext>
+                                        <Label Text="{Binding Description}"
+                                               FontFamily="MontSerratSemibold"/>
+                                        <component:ProgressBar Progress="{Binding Progress}"/>
+                                        <BoxView Background="#312e53" HeightRequest="1"/>
+                                        <StackLayout Orientation="Horizontal" 
+                                                     Margin="0, 10, 0, 0">
+                                            <Label>
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                        <Span Text="See more"
+                                                              FontFamily="MontSerrat"
+                                                              FontSize="16">
+                                                        </Span>
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+                                            <Image WidthRequest="25"
+                                                   Opacity="0.6"
+                                                   HorizontalOptions="EndAndExpand">
+                                                <Image.Source>
+                                                    <FontImageSource Glyph="&#xe5cc;"
+                                                                     FontFamily="MaterialIcon"
+                                                                     Size="25"
+                                                                     Color="#EBEBF5"/>
+                                                </Image.Source>
+                                            </Image>
+                                            <StackLayout.GestureRecognizers>
+                                                <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped" />
+                                            </StackLayout.GestureRecognizers>
+                                        </StackLayout>
+                                    </StackLayout>
+                                </component:Widget.XAMLChildren>
+                            </component:Widget>
+                            
+                            <Grid ColumnSpacing="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="50*"/>
+                                    <ColumnDefinition Width="50*"/>
+                                </Grid.ColumnDefinitions>
+                                <component:Widget Grid.Column="0" 
+                                                  Title="UV Index"
+                                                  ImageSource="&#xe518;">
+                                    <component:Widget.XAMLChildren>
+                                        <StackLayout HeightRequest="125"
+                                                     Spacing="30">
+                                            <StackLayout.BindingContext>
+                                                <vm:UVViewModel />
+                                            </StackLayout.BindingContext>
+                                            <StackLayout>
+                                                <Label Text="{Binding Index}"
+                                                            FontFamily="MontSerratSemibold"
+                                                            FontSize="24"/>
+                                                <Label Text="{Binding Description}"
+                                                               FontFamily="MontSerrat"/>
+                                            </StackLayout>
+                                            <component:ProgressBar Progress="{Binding Progress}"/>
+                                        </StackLayout>
+                                    </component:Widget.XAMLChildren>
+                                </component:Widget>
+                                <component:Widget Grid.Column="1" 
+                                                  Title="Sunrise"
+                                                  ImageSource="&#xe1c6;">
+                                    <component:Widget.XAMLChildren>
+                                        <StackLayout HeightRequest="125"
+                                                     Spacing="55">
+                                            <StackLayout.BindingContext>
+                                                <vm:UVViewModel />
+                                            </StackLayout.BindingContext>
+                                            <Label Text="{Binding TimeSunRise}"
+                                                   FontSize="32"
+                                                   FontFamily="MontSerratSemibold"/>
+                                            <Label Text="{Binding TimeSunSet, StringFormat='Sunset: {0}'}"
+                                                   FontFamily="MontSerrat"/>
+                                        </StackLayout>
+                                    </component:Widget.XAMLChildren>
+                                </component:Widget>
+                            </Grid>
+
+                            <Grid ColumnSpacing="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="50*"/>
+                                    <ColumnDefinition Width="50*"/>
+                                </Grid.ColumnDefinitions>
+                                <component:Widget Grid.Column="0" 
+                                                  Title="Wind"
+                                                  ImageSource="&#xefd8;">
+                                    <component:Widget.XAMLChildren>
+                                        <Grid HeightRequest="125">
+                                            <Grid.BindingContext>
+                                                <vm:MainPageViewModel />
+                                            </Grid.BindingContext>
+                                            <Image Source="./compass.png"
+                                                   HeightRequest="120"/>
+                                            <Label HorizontalOptions="Center"
+                                                   VerticalOptions="Center"
+                                                   FontFamily="MontSerratSemibold"
+                                                   FontSize="16">
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                        <Span Text="{Binding WeatherViewModel.WindSpeed}" 
+                                                              FontFamily="MontSerratSemibold"/>
+                                                        <Span Text="&#x0a;" />
+                                                        <Span Text="Km/s" />
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+                                            <Image Source="./arrow.png"
+                                                   Rotation="{Binding WeatherViewModel.WindDeg}"/>
+                                        </Grid>
+                                    </component:Widget.XAMLChildren>
+                                </component:Widget>
+                                <component:Widget Grid.Column="1" 
+                                                  Title="Rainfall"
+                                                  ImageSource="&#xe798;">
+                                    <component:Widget.XAMLChildren>
+                                        <StackLayout HeightRequest="125"
+                                                     Spacing="25">
+                                            <StackLayout.BindingContext>
+                                                <vm:MainPageViewModel />
+                                            </StackLayout.BindingContext>
+                                            <Label FontSize="24">
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                        <Span Text="{Binding WeatherViewModel.Rainfall, StringFormat='{0} mm'}" 
+                                                              FontFamily="MontSerrat"/>
+                                                        <Span Text="&#x0a;" />
+                                                        <Span Text="in last hour" 
+                                                              FontFamily="MontSerratSemibold"/>
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+                                            <Label>
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                        <Span Text="{Binding WeatherViewModel.TomorrowRain, StringFormat='{0}'}" 
+                                                              FontFamily="MontSerrat"/>
+                                                        <Span Text=" mm exprected in next 24h."
+                                                              FontFamily="MontSerrat"/>
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+                                        </StackLayout>
+                                    </component:Widget.XAMLChildren>
+                                </component:Widget>
+                            </Grid>
+
+                            <Grid ColumnSpacing="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="50*"/>
+                                    <ColumnDefinition Width="50*"/>
+                                </Grid.ColumnDefinitions>
+                                <component:Widget Grid.Column="0" 
+                                                  Title="Feels Like"
+                                                  ImageSource="&#xe1ff;">
+                                    <component:Widget.XAMLChildren>
+                                        <StackLayout HeightRequest="125"
+                                                     Spacing="55">
+                                            <StackLayout.BindingContext>
+                                                <vm:MainPageViewModel />
+                                            </StackLayout.BindingContext>
+                                            <Label Text="{Binding WeatherViewModel.FeelsLike, StringFormat='{0}°'}"
+                                                   FontFamily="MontSerratSemibold"
+                                                   FontSize="24"/>
+                                            <Label Text="{Binding WeatherViewModel.FeelPunchLine}"
+                                                   FontFamily="MontSerrat"/>
+                                        </StackLayout>
+                                    </component:Widget.XAMLChildren>
+                                </component:Widget>
+                                <component:Widget Grid.Column="1" 
+                                                  Title="Humidity"
+                                                  ImageSource="&#xf879;">
+                                    <component:Widget.XAMLChildren>
+                                        <StackLayout HeightRequest="125"
+                                                     Spacing="55">
+                                            <StackLayout.BindingContext>
+                                                <vm:MainPageViewModel />
+                                            </StackLayout.BindingContext>
+                                            <Label Text="{Binding WeatherViewModel.Humidity, StringFormat='{0}%'}"
+                                                   FontSize="24" 
+                                                   FontFamily="MontSerratSemibold"/>
+                                            <Label>
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                        <Span Text="The dew point is "
+                                                              FontFamily="MontSerrat"/>
+                                                        <Span Text="{Binding WeatherViewModel.DewPoint}" 
+                                                              FontFamily="MontSerrat"/>
+                                                        <Span Text=" right now."
+                                                              FontFamily="MontSerrat"/>
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+                                        </StackLayout>
+                                    </component:Widget.XAMLChildren>
+                                </component:Widget>
+                            </Grid>
+
+                            <Grid ColumnSpacing="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="50*"/>
+                                    <ColumnDefinition Width="50*"/>
+                                </Grid.ColumnDefinitions>
+                                <component:Widget Grid.Column="0" 
+                                          Title="Visibility"
+                                          ImageSource="&#xe8f4;">
+                                    <component:Widget.XAMLChildren>
+                                        <StackLayout HeightRequest="125"
+                                                     Spacing="75">
+                                            <StackLayout.BindingContext>
+                                                <vm:MainPageViewModel />
+                                            </StackLayout.BindingContext>
+                                            <Label Text="{Binding WeatherViewModel.Visibility, StringFormat='{0}km'}"
+                                                   FontFamily="MontSerratSemibold"
+                                                   FontSize="24"/>
+                                            <Label Text="{Binding WeatherViewModel.VisibilityLine}"
+                                                   FontFamily="MontSerrat"/>
+                                        </StackLayout>
+                                    </component:Widget.XAMLChildren>
+                                </component:Widget>
+                                <component:Widget Grid.Column="1" 
+                                                  Title="Pressure"
+                                                  ImageSource="&#xe9e4;">
+                                    <component:Widget.XAMLChildren>
+                                        <StackLayout HeightRequest="125"
+                                                     Spacing="55">
+                                            <StackLayout.BindingContext>
+                                                <vm:MainPageViewModel />
+                                            </StackLayout.BindingContext>
+                                            <Label Text="{Binding WeatherViewModel.Pressure, StringFormat='{0}hPA'}"
+                                                   FontSize="24" 
+                                                   FontFamily="MontSerratSemibold"/>
+                                            <Label Text="{Binding WeatherViewModel.PressureLine}"
+                                                   FontFamily="MontSerrat"/>
+                                        </StackLayout>
+                                    </component:Widget.XAMLChildren>
+                                </component:Widget>
+                            </Grid>
+
+                        </StackLayout>
+                    </VerticalStackLayout>
+                </ScrollView>
+            </StackLayout>
             <Border.Background>
                 <LinearGradientBrush>
                     <GradientStop Color="#2E335A"
@@ -68,6 +481,9 @@
                           Offset="1.0" />
                 </LinearGradientBrush>
             </Border.Background>
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="40" />
+            </Border.StrokeShape>
             <Border.GestureRecognizers>
                 <PanGestureRecognizer PanUpdated="PanGestureRecognizer_PanUpdated"/>
             </Border.GestureRecognizers>

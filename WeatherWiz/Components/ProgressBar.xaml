@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="WeatherWiz.Components.ProgressBar">
+    <VerticalStackLayout>
+        <StackLayout AbsoluteLayout.LayoutFlags="All" 
+             AbsoluteLayout.LayoutBounds="0,0,1,1"
+             Margin="0, 20">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <BoxView HorizontalOptions="FillAndExpand" 
+                         VerticalOptions="FillAndExpand" 
+                         HeightRequest="2"
+                         InputTransparent="True">
+                    <BoxView.Background>
+                        <LinearGradientBrush EndPoint="1,0">
+                            <GradientStop Color="#3758b0" Offset="0.1" />
+                            <GradientStop Color="#e64394" Offset="1.0" />
+                        </LinearGradientBrush>
+                    </BoxView.Background>
+                </BoxView>
+                <Rectangle WidthRequest="10" 
+                           HeightRequest="10"
+                           Background="white"
+                           Stroke="#272453"
+                           RadiusX="20"
+                           RadiusY="20"
+                           StrokeThickness="5"
+                           HorizontalOptions="Start"
+                           TranslationX="{Binding Progress}">
+                </Rectangle>
+            </Grid>
+        </StackLayout>
+    </VerticalStackLayout>
+</ContentView>
