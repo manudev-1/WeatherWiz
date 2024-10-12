@@ -195,10 +195,7 @@ namespace WeatherWiz.Models
         {
             get
             {
-                CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;
-                TextInfo textInfo = cultureInfo.TextInfo;
-
-                return textInfo.ToTitleCase(Date.ToString("ddd"));
+                return Date.ToString("ddd", new CultureInfo("en-US"));
             }
         }
     }

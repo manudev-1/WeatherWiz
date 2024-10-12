@@ -65,7 +65,7 @@
     </ContentPage.Resources>
     <Grid>
         <Image x:Name="bgImage" 
-               Source="{Binding ImageSource}" 
+               Source="{Binding TimeViewModel.ImageSource}" 
                Aspect="AspectFill"/>
         <Grid>
             <Grid.RowDefinitions>
@@ -81,12 +81,12 @@
                        FontSize="23" 
                        FontFamily="MontSerrat"/>
 
-                <Label Text="{Binding Temp, StringFormat='{0}°'}"
+                <Label Text="{Binding WeatherViewModel.Temp, StringFormat='{0}°'}"
                        FontSize="48" 
                        FontFamily="MontSerratThin"
                        HorizontalOptions="Center"/>
 
-                <Label Text="{Binding Description, StringFormat='{0}'}"
+                <Label Text="{Binding WeatherViewModel.Description, StringFormat='{0}'}"
                        FontSize="16" 
                        FontFamily="MontSerratSemibold"
                        TextColor="#EBEBF5"
@@ -94,12 +94,12 @@
                        HorizontalOptions="Center"/>
 
                 <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Spacing="10">
-                    <Label Text="{Binding HigherTemp, StringFormat='H:{0}°'}"
+                    <Label Text="{Binding WeatherViewModel.HigherTemp, StringFormat='H:{0}°'}"
                            FontSize="16" 
                            FontFamily="MontSerratSemibold"
                            HorizontalOptions="Center"/>
 
-                    <Label Text="{Binding LowerTemp, StringFormat='L:{0}°'}"
+                    <Label Text="{Binding WeatherViewModel.LowerTemp, StringFormat='L:{0}°'}"
                            FontSize="16" 
                            FontFamily="MontSerratSemibold"
                            HorizontalOptions="Center"/>
@@ -112,10 +112,10 @@
         </Grid>
         <Border Stroke="White"
                 x:Name="slider"
-                TranslationY="{Binding TraslationY}"
+                TranslationY="{Binding UIStateViewModel.TranslationY}"
                 Padding="20">
             <StackLayout>
-                <StackLayout IsVisible="{Binding Opened}"
+                <StackLayout IsVisible="{Binding UIStateViewModel.Opened}"
                              Margin="0, 30, 0, 0">
                     <Label Text="{Binding Location}"
                            HorizontalOptions="Center"
@@ -123,13 +123,13 @@
                            FontFamily="MontSerrat"/>
                     <StackLayout Orientation="Horizontal" 
                              HorizontalOptions="Center">
-                        <Label Text="{Binding Temp, StringFormat='{0}°|'}"
+                        <Label Text="{Binding WeatherViewModel.Temp, StringFormat='{0}°|'}"
                            FontSize="16"
                            FontFamily="MontSerratSemibold"
                            TextColor="#EBEBF5" 
                            Opacity="0.6"
                            HorizontalOptions="Center"/>
-                        <Label Text="{Binding Description, StringFormat='{0}'}"
+                        <Label Text="{Binding WeatherViewModel.Description, StringFormat='{0}'}"
                            FontSize="16"
                            FontFamily="MontSerratSemibold"
                            TextColor="#EBEBF5"
@@ -137,7 +137,7 @@
                            HorizontalOptions="Center"/>
                     </StackLayout>
                 </StackLayout>
-                <BoxView IsVisible="{Binding Opened}"
+                <BoxView IsVisible="{Binding UIStateViewModel.Opened}"
                          HeightRequest="1" 
                          HorizontalOptions="FillAndExpand"
                          VerticalOptions="Center"
@@ -211,7 +211,7 @@
                         </Grid>
 
                         <CollectionView x:Name="collectionView"
-                                        ItemsSource="{Binding Forecasts}"
+                                        ItemsSource="{Binding WeatherViewModel.Forecasts}"
                                         Margin="0, 20">
                             <CollectionView.ItemsLayout>
                                 <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10"/>
@@ -330,7 +330,7 @@
                                                    FontSize="16">
                                                 <Label.FormattedText>
                                                     <FormattedString>
-                                                        <Span Text="{Binding WindSpeed}" 
+                                                        <Span Text="{Binding WeatherViewModel.WindSpeed}" 
                                                               FontFamily="MontSerratSemibold"/>
                                                         <Span Text="&#x0a;" />
                                                         <Span Text="Km/s" />
@@ -338,7 +338,7 @@
                                                 </Label.FormattedText>
                                             </Label>
                                             <Image Source="./arrow.png"
-                                                   Rotation="{Binding WindDeg}"/>
+                                                   Rotation="{Binding WeatherViewModel.WindDeg}"/>
                                         </Grid>
                                     </component:Widget.XAMLChildren>
                                 </component:Widget>
@@ -354,7 +354,7 @@
                                             <Label FontSize="24">
                                                 <Label.FormattedText>
                                                     <FormattedString>
-                                                        <Span Text="{Binding Rainfall, StringFormat='{0} mm'}" 
+                                                        <Span Text="{Binding WeatherViewModel.Rainfall, StringFormat='{0} mm'}" 
                                                               FontFamily="MontSerrat"/>
                                                         <Span Text="&#x0a;" />
                                                         <Span Text="in last hour" 
@@ -365,7 +365,7 @@
                                             <Label>
                                                 <Label.FormattedText>
                                                     <FormattedString>
-                                                        <Span Text="{Binding TomorrowRain, StringFormat='{0}'}" 
+                                                        <Span Text="{Binding WeatherViewModel.TomorrowRain, StringFormat='{0}'}" 
                                                               FontFamily="MontSerrat"/>
                                                         <Span Text=" mm exprected in next 24h."
                                                               FontFamily="MontSerrat"/>
@@ -391,10 +391,10 @@
                                             <StackLayout.BindingContext>
                                                 <vm:MainPageViewModel />
                                             </StackLayout.BindingContext>
-                                            <Label Text="{Binding FeelsLike, StringFormat='{0}°'}"
+                                            <Label Text="{Binding WeatherViewModel.FeelsLike, StringFormat='{0}°'}"
                                                    FontFamily="MontSerratSemibold"
                                                    FontSize="24"/>
-                                            <Label Text="{Binding FeelPunchLine}"
+                                            <Label Text="{Binding WeatherViewModel.FeelPunchLine}"
                                                    FontFamily="MontSerrat"/>
                                         </StackLayout>
                                     </component:Widget.XAMLChildren>
@@ -408,7 +408,7 @@
                                             <StackLayout.BindingContext>
                                                 <vm:MainPageViewModel />
                                             </StackLayout.BindingContext>
-                                            <Label Text="{Binding Humidity, StringFormat='{0}%'}"
+                                            <Label Text="{Binding WeatherViewModel.Humidity, StringFormat='{0}%'}"
                                                    FontSize="24" 
                                                    FontFamily="MontSerratSemibold"/>
                                             <Label>
@@ -416,7 +416,7 @@
                                                     <FormattedString>
                                                         <Span Text="The dew point is "
                                                               FontFamily="MontSerrat"/>
-                                                        <Span Text="{Binding DewPoint}" 
+                                                        <Span Text="{Binding WeatherViewModel.DewPoint}" 
                                                               FontFamily="MontSerrat"/>
                                                         <Span Text=" right now."
                                                               FontFamily="MontSerrat"/>
@@ -442,10 +442,10 @@
                                             <StackLayout.BindingContext>
                                                 <vm:MainPageViewModel />
                                             </StackLayout.BindingContext>
-                                            <Label Text="{Binding Visibility, StringFormat='{0}km'}"
+                                            <Label Text="{Binding WeatherViewModel.Visibility, StringFormat='{0}km'}"
                                                    FontFamily="MontSerratSemibold"
                                                    FontSize="24"/>
-                                            <Label Text="{Binding VisibilityLine}"
+                                            <Label Text="{Binding WeatherViewModel.VisibilityLine}"
                                                    FontFamily="MontSerrat"/>
                                         </StackLayout>
                                     </component:Widget.XAMLChildren>
@@ -459,10 +459,10 @@
                                             <StackLayout.BindingContext>
                                                 <vm:MainPageViewModel />
                                             </StackLayout.BindingContext>
-                                            <Label Text="{Binding Pressure, StringFormat='{0}hPA'}"
+                                            <Label Text="{Binding WeatherViewModel.Pressure, StringFormat='{0}hPA'}"
                                                    FontSize="24" 
                                                    FontFamily="MontSerratSemibold"/>
-                                            <Label Text="{Binding PressureLine}"
+                                            <Label Text="{Binding WeatherViewModel.PressureLine}"
                                                    FontFamily="MontSerrat"/>
                                         </StackLayout>
                                     </component:Widget.XAMLChildren>

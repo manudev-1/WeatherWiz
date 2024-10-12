@@ -11,14 +11,14 @@ public partial class ProgressBar : ContentView
     // Bindable Property
     public static readonly BindableProperty ProgressProperty = BindableProperty.Create(
         nameof(Progress),
-        typeof(string),
+        typeof(double),
         typeof(Widget),
-        default(string)
+        default(double)
     );
     // Property
-    public string Progress
+    public double Progress
     {
-        get => (string)GetValue(ProgressProperty);
+        get => (double)GetValue(ProgressProperty);
         set => SetValue(ProgressProperty, value);
     }
 }

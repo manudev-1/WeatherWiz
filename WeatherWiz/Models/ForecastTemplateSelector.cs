@@ -11,7 +11,7 @@ namespace WeatherWiz.Models
         public DataTemplate? ForecastTemplate { get; set; }
         public DataTemplate? SeparatorTemplate { get; set; }
         public DataTemplate? WeekForecastTemplate { get; set; }
-        protected override DataTemplate OnSelectTemplate(object item, BindableObject container)
+        protected override DataTemplate? OnSelectTemplate(object item, BindableObject container)
         {
             if (item is Separator)
                 return SeparatorTemplate ?? new();

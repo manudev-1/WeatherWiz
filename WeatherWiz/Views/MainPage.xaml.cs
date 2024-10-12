@@ -22,7 +22,7 @@ namespace WeatherWiz
         private async void PanGestureRecognizer_PanUpdated(object sender, PanUpdatedEventArgs e)
         {
             var viewModel = (MainPageViewModel)BindingContext;
-            await viewModel.PanUpdate(new() { EventArgs = e, Sender = sender }); 
+            await viewModel.UIStateViewModel.PanUpdate(new() { EventArgs = e, Sender = sender }); 
         } // End PanGestureRecognizer_PanUpdated
         private async void TapGestureRecognizer_Tapped(object sender, TappedEventArgs e)
         {
@@ -31,18 +31,18 @@ namespace WeatherWiz
         private void TapGestureRecognizer_Tapped_1(object sender, TappedEventArgs e)
         {
             binding = this.BindingContext as MainPageViewModel ?? new();
-            if (collectionView.ItemsSource != binding.Forecasts)
+            if (collectionView.ItemsSource != binding.WeatherViewModel.Forecasts)
             {
-                collectionView.ItemsSource = binding.Forecasts;
+                collectionView.ItemsSource = binding.WeatherViewModel.Forecasts;
                 Grid.SetColumn(underLine, 0);
             }
         } // End TapGestureRecognizer_Tapped_1
         private void TapGestureRecognizer_Tapped_2(object sender, TappedEventArgs e)
         {
             binding = this.BindingContext as MainPageViewModel ?? new();
-            if (collectionView.ItemsSource != binding.WeatherWeek)
+            if (collectionView.ItemsSource != binding.WeatherViewModel.WeatherWeek)
             {
-                collectionView.ItemsSource = binding.WeatherWeek;
+                collectionView.ItemsSource = binding.WeatherViewModel.WeatherWeek;
                 Grid.SetColumn(underLine, 1);
             }
         } // End TapGestureRecognizer_Tapped_2
